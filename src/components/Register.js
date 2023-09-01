@@ -1,67 +1,131 @@
 import React, { useState } from "react";
-import { Typography, Button, TextField, Paper } from "@mui/material";
-
+import {
+  Typography,
+  Button,
+  TextField,
+  Paper,
+  Grid,
+  Link,
+} from "@mui/material";
+import { registerUser } from "../slices/userSlice";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 const Register = () => {
-  const [registerData, setRegisterData] = useState({
+  const history = useHistory();
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
     username: "",
     password: "",
-    confirmPassword: "",
+    email: "",
+    phone: "",
   });
+  const dispatch = useDispatch();
 
-  const handleRegisterChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegisterData({ ...registerData, [name]: value });
+    setUser({ ...user, [name]: value });
   };
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
     // Handle registration logic here
-    console.log("Register data:", registerData);
+    console.log("Register data:", user);
+    dispatch(registerUser(user));
+    const registrationSuccessful = true;
+    if (registrationSuccessful) {
+      history.push("/signin");
+    }
   };
 
   return (
-    <Paper elevation={3} style={{ padding: "20px" }}>
-      <Typography variant="h5" align="center" gutterBottom>
-        Register
-      </Typography>
-      <form onSubmit={handleRegisterSubmit}>
-        <TextField
-          label="Username"
-          name="username"
-          fullWidth
-          margin="normal"
-          variant="outlined"
-          value={registerData.username}
-          onChange={handleRegisterChange}
-          required
-        />
-        <TextField
-          label="Password"
-          name="password"
-          type="password"
-          fullWidth
-          margin="normal"
-          variant="outlined"
-          value={registerData.password}
-          onChange={handleRegisterChange}
-          required
-        />
-        <TextField
-          label="Confirm Password"
-          name="confirmPassword"
-          type="password"
-          fullWidth
-          margin="normal"
-          variant="outlined"
-          value={registerData.confirmPassword}
-          onChange={handleRegisterChange}
-          required
-        />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+    <Grid container justifyContent="center" alignItems="center" height="100vh">
+      <Paper elevation={3} style={{ padding: "16px", width: "300px" }}>
+        <Typography variant="h5" align="center" gutterBottom>
           Register
-        </Button>
-      </form>
-    </Paper>
+        </Typography>
+        <form onSubmit={handleRegisterSubmit}>
+          <TextField
+            fullWidth
+            label="First Name"
+            name="firstName"
+            value={user.firstName}
+            onChange={handleChange}
+            variant="outlined"
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Last Name"
+            name="lastName"
+            value={user.lastName}
+            onChange={handleChange}
+            variant="outlined"
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Username"
+            name="username"
+            value={user.username}
+            onChange={handleChange}
+            variant="outlined"
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            name="password"
+            value={user.password}
+            onChange={handleChange}
+            type="password"
+            variant="outlined"
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            name="email"
+            value={user.email}
+            onChange={handleChange}
+            type="email"
+            variant="outlined"
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Phone"
+            name="phone"
+            value={user.phone}
+            onChange={handleChange}
+            variant="outlined"
+            margin="normal"
+            required
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            style={{ marginTop: "16px" }}
+          >
+            Register
+          </Button>
+        </form>
+        <Typography
+          variant="body2"
+          align="center"
+          style={{ marginTop: "16px" }}
+        >
+          Already have an account? <Link to="/signin">Sign In</Link>
+        </Typography>
+      </Paper>
+    </Grid>
   );
 };
 

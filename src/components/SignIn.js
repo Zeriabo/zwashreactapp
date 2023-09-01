@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Typography, Button, TextField, Paper } from "@mui/material";
+import { signIn } from "../slices/userSlice";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const SignIn = () => {
   const [signInData, setSignInData] = useState({ username: "", password: "" });
-
+  const dispatch = useDispatch();
+  const history = useHistory();
   const handleSignInChange = (e) => {
     const { name, value } = e.target;
     setSignInData({ ...signInData, [name]: value });
@@ -13,6 +17,11 @@ const SignIn = () => {
     e.preventDefault();
     // Handle sign-in logic here
     console.log("Sign-in data:", signInData);
+    dispatch(signIn(signInData.username, signInData.password));
+    const signInSuccessful = true;
+    if (signInSuccessful) {
+      history.push("/dashboard");
+    }
   };
 
   return (
