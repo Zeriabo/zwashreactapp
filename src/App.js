@@ -5,25 +5,20 @@ import Box from "@mui/material/Box";
 import Home from "./pages/Home";
 import SignIn from "./components/SignIn";
 import Register from "./components/Register";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 function App() {
   return (
     <Container maxWidth="sm">
       <Box sx={{ my: 4 }}>
         <Router>
-          <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/signin" component={SignIn} />
-            <Route path="/register" component={Register} />
-            <Route path="/dashboard" component={Dashboard} />
-            {/* Redirect to the sign-in page if no route matches */}
-            <Redirect to="/signin" />
-          </Switch>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
         </Router>
       </Box>
     </Container>

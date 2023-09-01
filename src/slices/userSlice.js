@@ -26,15 +26,10 @@ export const signIn = (username, password) => async (dispatch) => {
         },
         body: `username=${username}&password=${password}`,
       }
-    );
-
-    if (response.status === 200) {
-      const userData = await response.json();
-      // Dispatch the setUser action with the user data
-      dispatch(setUser(userData));
-    } else {
-      console.error("Sign-in failed");
-    }
+    )
+      .then((response) => response.json())
+      .then((data) => dispatch(setUser(data)))
+      .catch((err) => console.error(err));
   } catch (error) {
     console.error("Error signing in:", error);
   }

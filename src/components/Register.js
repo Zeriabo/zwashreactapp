@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import { registerUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const Register = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -34,7 +34,7 @@ const Register = () => {
     dispatch(registerUser(user));
     const registrationSuccessful = true;
     if (registrationSuccessful) {
-      history.push("/signin");
+      navigate.push("/signin");
     }
   };
 
