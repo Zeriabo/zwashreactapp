@@ -20,7 +20,7 @@ const SignIn = () => {
     dispatch(signIn(signInData.username, signInData.password));
     const signInSuccessful = true;
     if (signInSuccessful) {
-      //  navigate.push("/dashboard");
+      navigate("/dashboard");
     }
   };
 

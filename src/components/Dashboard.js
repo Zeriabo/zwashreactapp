@@ -1,13 +1,15 @@
-import React from "react";
-
+import React, { useEffect } from "react";
+import { selectUser } from "../slices/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 const Dashboard = () => {
-  // You can fetch data or perform other actions related to the dashboard here
-
+  const dispatch = useDispatch;
+  useEffect(() => {});
+  const user = useSelector(selectUser);
+  console.log(user);
   return (
     <div>
-      <h2>Dashboard</h2>
-      <p>Welcome to your dashboard!</p>
-      {/* Add dashboard content here */}
+      <h2>Welcome, {user ? user.username : "Guest"}!</h2>
+      {/* You can add more dashboard content here */}
     </div>
   );
 };
