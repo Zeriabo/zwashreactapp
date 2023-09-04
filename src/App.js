@@ -7,6 +7,7 @@ import SignIn from "./components/SignIn";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import StationForm from "./components/StationForm";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="create-station" element={<StationForm />} />
           </Routes>
         </Router>
       </Box>
