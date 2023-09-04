@@ -13,6 +13,7 @@ const DefaultLocation = { lat: 60.1699, lng: 24.9384 };
 const DefaultZoom = 10;
 
 const StationForm = ({ serviceProviderId }) => {
+  console.log(serviceProviderId);
   const dispatch = useDispatch();
   const [stationName, setStationName] = useState("");
 
@@ -24,7 +25,8 @@ const StationForm = ({ serviceProviderId }) => {
   const [zoom, setZoom] = useState(DefaultZoom);
 
   function handleChangeLocation(lat, lng) {
-    setLocation({ lat: lat, lng: lng });
+    console.log(lat, lng);
+    setLocation({ latitude: lat, longitude: lng });
   }
 
   function handleChangeZoom(newZoom) {

@@ -5,9 +5,9 @@ import Box from "@mui/material/Box";
 import Home from "./pages/Home";
 import SignIn from "./components/SignIn";
 import Register from "./components/Register";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import StationForm from "./components/StationForm";
+import StationForm from "./pages/StationForm";
 
 function App() {
   return (
