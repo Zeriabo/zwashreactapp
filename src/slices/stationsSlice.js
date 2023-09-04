@@ -49,7 +49,7 @@ export const createStation = (station) => async (dispatch) => {
       body: JSON.stringify(station),
     })
       .then((response) => response.json())
-      .then((data) => dispatch(getStations(data)))
+      .then((data) => dispatch(getStationsSuccess(data)))
       .then((data) => console.log(data))
       .catch((err) => console.error(err));
   } catch (error) {
@@ -67,7 +67,7 @@ export const deleteStation = (id) => async (dispatch) => {
       },
     })
       .then((response) => response.json())
-      .then((data) => dispatch(getStations(data)))
+      .then((data) => dispatch(getStationsSuccess(data)))
       .then((data) => console.log(data))
       .catch((err) => console.error(err));
   } catch (error) {
