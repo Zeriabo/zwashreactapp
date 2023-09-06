@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser } from "../slices/userSlice";
+import { selectUser, logOut } from "../slices/userSlice";
 import { fetchStations, deleteStation } from "../slices/stationsSlice";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import Button from "@mui/material/Button"; // Import MUI Button
+import { Link, useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
 import ServiceProviderSelect from "../components/ServiceProviderSelect";
 
 const Dashboard = () => {
@@ -13,7 +13,7 @@ const Dashboard = () => {
 
   const stations = useSelector((state) => state.station.stations);
   const [serviceProviderId, setServiceProviderId] = useState(0);
-
+  const navigate = useNavigate();
   const fetchStationsByServiceProvider = (providerId) => {
     dispatch(fetchStations(providerId));
   };
@@ -29,15 +29,18 @@ const Dashboard = () => {
   const handleDeleteStation = (stationId) => {
     dispatch(deleteStation(stationId));
   };
-
+  const handleLogout = () => {
+    dispatch(logOut());
+    navigate("/");
+  };
   if (userstate.loading) {
     // Optionally, you can render a loading indicator or a message here
     return <div>Loading...</div>;
-  } else {
+  } else if (userstate.loading == false && userstate.user != null) {
+    const { username } = userstate.user;
     return (
       <div>
-        <h2>Welcome, {userstate.user ? userstate.user.username : "Guest"}!</h2>
-
+        <h2>Welcome, {username ? username : "Guest"}!</h2>
         <ServiceProviderSelect />
         <h3>List of Stations:</h3>
         <ul>
@@ -59,8 +62,12 @@ const Dashboard = () => {
             Create Station
           </Button>
         </Link>
+        <button onClick={handleLogout}>Logout</button> {/* Logout button */}
       </div>
     );
+  } else {
+    navigate("/");
+    return null;
   }
 };
 

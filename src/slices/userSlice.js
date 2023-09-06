@@ -23,6 +23,11 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    logOut: (state) => {
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+    },
   },
 });
 
@@ -105,7 +110,7 @@ export const registerUser = (user) => async (dispatch) => {
     console.error("Error registering user:", error);
   }
 };
-export const { setUser, setLoading, setError } = userSlice.actions;
+export const { setUser, setLoading, setError, logOut } = userSlice.actions;
 
 export const selectUser = (state) => state.user;
 export const selectLoading = (state) => state.user.loading;
