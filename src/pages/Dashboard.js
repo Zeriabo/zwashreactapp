@@ -5,6 +5,7 @@ import { fetchStations, deleteStation } from "../slices/stationsSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import ServiceProviderSelect from "../components/ServiceProviderSelect";
+import "./Dashboard.css";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const Dashboard = () => {
     }
   }, [dispatch, userstate]);
 
-  const handleDeleteStation = (stationId) => {
+  const handleEditStation = (stationId) => {
     dispatch(deleteStation(stationId));
   };
   const handleLogout = () => {
@@ -39,30 +40,38 @@ const Dashboard = () => {
   } else if (userstate.loading == false && userstate.user != null) {
     const { username } = userstate.user;
     return (
-      <div>
-        <h2>Welcome, {username ? username : "Guest"}!</h2>
+      <div className="dashboard-container">
+        <div className="header">
+          <h2>Welcome, {username ? username : "Guest"}!</h2>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
         <ServiceProviderSelect />
-        <h3>List of Stations:</h3>
-        <ul>
-          {stations.map((station) => (
-            <li key={station.id}>
-              {station.name}
-              <button onClick={() => handleDeleteStation(station.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-        <Link
-          to={{
-            pathname: "/create-station",
-          }}
-        >
-          <Button variant="contained" color="primary">
-            Create Station
-          </Button>
-        </Link>
-        <button onClick={handleLogout}>Logout</button> {/* Logout button */}
+        <div className="station-list">
+          <h3>List of Stations:</h3>
+          <ul>
+            {stations.map((station) => (
+              <li key={station.id}>
+                {station.name}
+                <button onClick={() => handleEditStation(station.id)}>
+                  Edit
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="create-station-button">
+          <Link
+            to={{
+              pathname: "/create-station",
+            }}
+          >
+            <Button variant="contained" color="primary">
+              Create Station
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   } else {

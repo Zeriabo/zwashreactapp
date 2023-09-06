@@ -1,0 +1,50 @@
+/* Dashboard.css */
+
+/* Styling for the welcome message */
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* Styling for the list of stations */
+  h3 {
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  /* Styling for the delete button */
+  button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  /* Styling for the create station button */
+  .create-button {
+    margin-top: 20px;
+  }
+  
+  /* Styling for the logout button */
+  .logout-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+  
+  /* Additional styles can be added as needed */
+  
