@@ -1,25 +1,38 @@
 import React, { useState } from "react";
-import { Typography, Button, TextField, Paper } from "@mui/material";
+import {
+  Typography,
+  Button,
+  TextField,
+  Paper,
+  CircularProgress, // Add CircularProgress for loading indicator
+} from "@mui/material";
 import { signIn } from "../slices/userSlice";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, selectLoading, selectError } from "../slices/userSlice"; // Add selectors for loading and error states
 
 const SignIn = () => {
   const [signInData, setSignInData] = useState({ username: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loading = useSelector(selectLoading); // Get loading state from Redux
+  const error = useSelector(selectError); // Get error state from Redux
+
   const handleSignInChange = (e) => {
     const { name, value } = e.target;
     setSignInData({ ...signInData, [name]: value });
   };
 
-  const handleSignInSubmit = (e) => {
+  const handleSignInSubmit = async (e) => {
     e.preventDefault();
     // Handle sign-in logic here
-    console.log("Sign-in data:", signInData);
+
+    // Dispatch the sign-in action with credentials
     dispatch(signIn(signInData.username, signInData.password));
-    const signInSuccessful = true;
-    if (signInSuccessful) {
+
+    // Check for errors and loading state
+    if (!loading && !error) {
+      // Sign-in successful, navigate to the dashboard
       navigate("/dashboard");
     }
   };
@@ -51,9 +64,18 @@ const SignIn = () => {
           onChange={handleSignInChange}
           required
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Sign In
-        </Button>
+        {loading ? ( // Display loading indicator while signing in
+          <CircularProgress color="primary" />
+        ) : (
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Sign In
+          </Button>
+        )}
+        {error && ( // Display error message if sign-in fails
+          <Typography color="error" variant="body2">
+            {error}
+          </Typography>
+        )}
       </form>
     </Paper>
   );

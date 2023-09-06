@@ -19,7 +19,7 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="create-station" element={<StationForm />} />
+            <Route path="/create-station" element={<StationForm />} />
           </Routes>
         </Router>
       </Box>

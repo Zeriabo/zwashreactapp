@@ -1,5 +1,6 @@
 // slices/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const stationsSlice = createSlice({
   name: "stations",
@@ -8,6 +9,7 @@ const stationsSlice = createSlice({
   },
   reducers: {
     getStationsSuccess: (state, action) => {
+      console.log(action);
       state.stations = action.payload;
     },
   },
@@ -17,36 +19,36 @@ export const { getStationsSuccess } = stationsSlice.actions;
 export const fetchStations = (id) => async (dispatch) => {
   try {
     console.log(id);
-    // Make an API request to sign in the user
-    const response = await fetch(
-      "http://localhost:7001/v1/stations/service_provider/" + id,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      dispatch(getStationsSuccess(data));
-    } else {
-      console.error("Error fetching stations:", response.statusText);
-    }
+    // Make an API request to get the station of a service provider
+    axios
+      .get("http://localhost:7001/v1/stations/service-provider/" + id)
+      .then((payload) => dispatch(getStationsSuccess(payload.data)))
+      .catch((error) => console.error("Error fetching stations:", error));
   } catch (error) {
     console.error("Error fetching stations:", error);
   }
 };
 export const createStation = (station) => async (dispatch) => {
+  console.log(station.data);
+
+  // Construct the URL with all request parameters as query parameters
+  const url = new URL("http://localhost:7001/v1/stations/");
+  url.searchParams.append("name", station.data.name);
+  url.searchParams.append("address", station.data.address);
+  url.searchParams.append("latitude", station.data.latitude.toString());
+  url.searchParams.append("longitude", station.data.longitude.toString());
+  url.searchParams.append(
+    "serviceProvider",
+    station.data.serviceProvider.toString()
+  );
+  url.searchParams.append("media", station.data.media);
   try {
-    console.log(station);
     // Make an API request to sign in the user
-    const response = await fetch("http://localhost:7001/v1/stations/", {
+    await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(station),
     })
       .then((response) => response.json())
       .then((data) => dispatch(getStationsSuccess(data)))
@@ -58,9 +60,8 @@ export const createStation = (station) => async (dispatch) => {
 };
 export const deleteStation = (id) => async (dispatch) => {
   try {
-    console.log(id);
     // Make an API request to sign in the user
-    const response = await fetch("http://localhost:7001/v1/stations" + id, {
+    await fetch("http://localhost:7001/v1/stations" + id, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

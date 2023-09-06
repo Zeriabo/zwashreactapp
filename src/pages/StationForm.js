@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createStation, deleteStation } from "../slices/stationsSlice";
 import TextField from "@mui/material/TextField";
@@ -8,25 +8,32 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import MapPicker from "react-google-map-picker";
-
+import { useLocation } from "react-router-dom";
+import { selectUser } from "../slices/userSlice";
 const DefaultLocation = { lat: 60.1699, lng: 24.9384 };
 const DefaultZoom = 10;
 
-const StationForm = ({ serviceProviderId }) => {
-  console.log(serviceProviderId);
+const StationForm = () => {
+  const [serviceProviderId, setServiceProviderId] = useState(0);
   const dispatch = useDispatch();
   const [stationName, setStationName] = useState("");
-
-  const [logoFile, setLogoFile] = useState(null); // Logo file
-  const [pictureFile, setPictureFile] = useState(null); // Picture file
+  const [address, setAddress] = useState("");
+  const userstate = useSelector(selectUser);
+  console.log(userstate);
+  const [logoFile, setLogoFile] = useState({}); // Logo file
+  const [pictureFile, setPictureFile] = useState({}); // Picture file
   const [defaultLocation, setDefaultLocation] = useState(DefaultLocation);
 
   const [location, setLocation] = useState(defaultLocation);
   const [zoom, setZoom] = useState(DefaultZoom);
 
+  useEffect(() => {
+    // Initialize the Google Maps Geocoder here, after the API has loaded
+    const geocoder = new window.google.maps.Geocoder();
+  }, []);
   function handleChangeLocation(lat, lng) {
     console.log(lat, lng);
-    setLocation({ latitude: lat, longitude: lng });
+    setLocation({ lat: lat, lng: lng });
   }
 
   function handleChangeZoom(newZoom) {
@@ -38,24 +45,34 @@ const StationForm = ({ serviceProviderId }) => {
     setZoom(DefaultZoom);
   }
   const handleCreateStation = () => {
-    const formData = new FormData();
-    formData.append("name", stationName);
-    formData.append("location", location);
-    formData.append("logo", logoFile);
-    formData.append("picture", pictureFile);
+    setServiceProviderId(userstate.user.id);
+    console.log(serviceProviderId);
+    const station = {
+      name: stationName,
+      address: address,
+      media: {
+        logoFile: logoFile,
+        pictureFile: pictureFile,
+      },
+      latitude: location.lat,
+      longitude: location.lng,
+      serviceProvider: serviceProviderId,
+    };
+
+    console.log("Request Data:", JSON.stringify(station)); // Log the request data
 
     // Create a new station and dispatch the action
+    // dispatch(createStation(station));
     dispatch(
       createStation({
-        data: formData,
-        serviceProviderId,
+        data: station,
       })
     );
     // Clear the input fields
-    setStationName("");
-    setLocation("");
-    setLogoFile(null);
-    setPictureFile(null);
+    // setStationName("");
+    // setLocation(DefaultLocation); // Reset location to the default
+    // setLogoFile(null);
+    // setPictureFile(null);
   };
 
   const handleDeleteStation = (stationId) => {
@@ -76,7 +93,14 @@ const StationForm = ({ serviceProviderId }) => {
       />
 
       <InputLabel>Location</InputLabel>
-
+      <TextField
+        label="Address"
+        variant="outlined"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
       <MapPicker
         defaultLocation={location}
         zoom={13} // Adjust zoom level as needed
