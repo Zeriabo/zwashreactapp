@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import SignIn from "./components/SignIn";
 import Register from "./components/Register";
 import Dashboard from "./pages/Dashboard";
+import StationPage from "./pages/StationPage";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import StationForm from "./pages/StationForm";
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/create-station" element={<StationForm />} />
+            <Route path="/station/:stationId" element={<StationPage />} />
           </Routes>
         </Router>
       </Box>

@@ -28,7 +28,7 @@ const Dashboard = () => {
   }, [dispatch, userstate]);
 
   const handleEditStation = (stationId) => {
-    dispatch(deleteStation(stationId));
+    navigate(`/station/${stationId}`);
   };
   const handleLogout = () => {
     dispatch(logOut());
