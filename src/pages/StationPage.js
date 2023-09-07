@@ -5,6 +5,7 @@ import MapPicker from "react-google-map-picker";
 import { updateStationAddress } from "../slices/stationsSlice"; // Import the action for updating the address
 import { useDispatch } from "react-redux";
 import { fetchProgramsForStation } from "../slices/programsSlice";
+import ProgramList from "../components/ProgramList";
 const StationPage = () => {
   const { stationId } = useParams();
   const station = useSelector((state) => {
@@ -17,6 +18,11 @@ const StationPage = () => {
     lat: station.latitude,
     lng: station.longitude,
   };
+  const programs = useSelector((state) => {
+    return state.programs.programs;
+  });
+
+  console.log(programs);
   const [newAddress, setNewAddress] = useState(""); // State for the new address
   const dispatch = useDispatch(); // Redux dispatch function
 
@@ -74,7 +80,14 @@ const StationPage = () => {
 
       {/* Button to update the address */}
       <button onClick={handleUpdateAddress}>Update Address</button>
-
+      {/* {programs.map((program) => (
+        <div key={program.id}>
+          <p>Program Type: {program.programType}</p>
+          <p>Description: {program.description}</p>
+          <p>Price: {program.price}</p>
+        </div>
+      ))} */}
+      <ProgramList programs={programs} />
       <MapPicker
         mapContainerStyle={mapContainerStyle}
         defaultLocation={DefaultLocation}
