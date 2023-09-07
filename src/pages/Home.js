@@ -13,7 +13,7 @@ const Home = () => {
   return (
     <Container>
       <Typography variant="h4" align="center" gutterBottom>
-        Welcome to Your App
+        Service provider management
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
