@@ -1,4 +1,3 @@
-// slices/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -12,9 +11,23 @@ const stationsSlice = createSlice({
       console.log(action);
       state.stations = action.payload;
     },
+    updateStationAddressSuccess: (state, action) => {
+      console.log(action);
+      // Update the address of the station in the state
+      const updatedStation = action.payload;
+      const updatedStations = state.stations.map((station) => {
+        if (station.id === updatedStation.id) {
+          return { ...station, address: updatedStation.address };
+        }
+        return station;
+      });
+      state.stations = updatedStations;
+    },
   },
 });
-export const { getStationsSuccess } = stationsSlice.actions;
+
+export const { getStationsSuccess, updateStationAddressSuccess } =
+  stationsSlice.actions;
 
 export const fetchStations = (id) => async (dispatch) => {
   try {
@@ -28,6 +41,7 @@ export const fetchStations = (id) => async (dispatch) => {
     console.error("Error fetching stations:", error);
   }
 };
+
 export const createStation = (station) => async (dispatch) => {
   console.log(station.data);
 
@@ -58,6 +72,7 @@ export const createStation = (station) => async (dispatch) => {
     console.error("Error getting stations: ", error);
   }
 };
+
 export const deleteStation = (id) => async (dispatch) => {
   try {
     // Make an API request to sign in the user
@@ -75,4 +90,22 @@ export const deleteStation = (id) => async (dispatch) => {
     console.error("Error getting stations: ", error);
   }
 };
+
+export const updateStationAddress =
+  (stationId, stationWithNewAddress) => async (dispatch) => {
+    try {
+      console.log(stationWithNewAddress);
+      // Make an API request to update the station's address
+      const response = await axios.put(
+        `http://localhost:7001/v1/stations/${stationId}`,
+        stationWithNewAddress
+      );
+
+      // Dispatch the success action with the updated station data
+      dispatch(updateStationAddressSuccess(response.data));
+    } catch (error) {
+      console.error("Error updating station address:", error);
+    }
+  };
+
 export default stationsSlice.reducer;

@@ -8,7 +8,6 @@ const serviceProvidersSlice = createSlice({
   },
   reducers: {
     getServiceProvidersSuccess: (state, action) => {
-      console.log(action);
       state.serviceProviders = action.payload;
     },
     createServiceProviderSuccess: (state, action) => {

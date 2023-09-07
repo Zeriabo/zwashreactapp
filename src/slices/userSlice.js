@@ -56,10 +56,8 @@ export const signIn = (username, password) => async (dispatch) => {
 
     if (response.status === 200) {
       const userData = response.data;
-      console.log(userData);
       dispatch(setUser(userData));
       dispatch(setLoading(false));
-      console.log("fetching the service providers");
       // Fetch the list of service providers and update the state
       const serviceProvidersResponse = await axios
         .get(
