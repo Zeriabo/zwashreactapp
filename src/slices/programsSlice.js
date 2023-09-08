@@ -89,6 +89,34 @@ export const removeProgram = createAsyncThunk(
     }
   }
 );
+// update a program
+export const updateProgram = createAsyncThunk(
+  "programs/updateProgram",
+  async (programData, { rejectWithValue }) => {
+    try {
+      // Make an API request to update an existing car washing program
+      const response = await fetch(
+        `http://localhost:7001/v1/programs/${programData.id}`, // Use the program's ID to identify the program to update
+        {
+          method: "PUT", // Use the PUT method for updates
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(programData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update the program");
+      }
+
+      // Return the updated program data
+      return programData;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 // Create a slice for the programs
 const programsSlice = createSlice({
@@ -117,6 +145,17 @@ const programsSlice = createSlice({
         state.programs = state.programs.filter(
           (program) => program.id !== action.payload
         );
+      })
+      .addCase(updateProgram.fulfilled, (state, action) => {
+        // Find the index of the updated program in the programs array
+        const updatedProgramIndex = state.programs.findIndex(
+          (program) => program.id === action.payload.id
+        );
+
+        // Update the program in the programs array with the updated data
+        if (updatedProgramIndex !== -1) {
+          state.programs[updatedProgramIndex] = action.payload;
+        }
       });
   },
 });

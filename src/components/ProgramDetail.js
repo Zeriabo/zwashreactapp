@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
+import { updateProgram } from "../slices/programsSlice";
 
 const ProgramDetail = () => {
+  const dispatch = useDispatch();
   const { id } = useParams();
   const program = useSelector((state) => {
     return state.programs.programs.find((p) => Number(p.id) === Number(id));
   });
-
+  const [prog, setProg] = useState(program);
   const [editMode, setEditMode] = useState(false); // Track edit mode
   const [editedProgram, setEditedProgram] = useState(program); // Store edited program data
 
@@ -24,6 +26,17 @@ const ProgramDetail = () => {
     // You can use the `editedProgram` state to get the updated data
     console.log("Program saved:", editedProgram);
     // After saving, exit edit mode
+
+    setProg(editedProgram);
+    dispatch(updateProgram(editedProgram))
+      .then(() => {
+        // Handle success, e.g., show a success message
+        console.log("Program updated successfully!");
+      })
+      .catch((error) => {
+        // Handle error, e.g., show an error message
+        console.error("Error updating program:", error);
+      });
     toggleEditMode();
   };
 
@@ -37,26 +50,10 @@ const ProgramDetail = () => {
         <Typography variant="h4" gutterBottom>
           Program Details
         </Typography>
-        {editMode ? (
-          <div>
-            <label htmlFor="programType">Program Type:</label>
-            <input
-              type="text"
-              id="programType"
-              value={editedProgram.programType}
-              onChange={(e) =>
-                setEditedProgram({
-                  ...editedProgram,
-                  programType: e.target.value,
-                })
-              }
-            />
-          </div>
-        ) : (
-          <Typography variant="subtitle1">
-            Program Type: {program.programType}
-          </Typography>
-        )}
+
+        <Typography variant="subtitle1">
+          Program Type: {prog.programType}
+        </Typography>
 
         {editMode ? (
           <div>
@@ -74,7 +71,7 @@ const ProgramDetail = () => {
           </div>
         ) : (
           <Typography variant="body1" paragraph>
-            Description: {program.description}
+            Description: {prog.description}
           </Typography>
         )}
 
@@ -94,7 +91,7 @@ const ProgramDetail = () => {
             />
           </div>
         ) : (
-          <Typography variant="body1">Price: {program.price}</Typography>
+          <Typography variant="body1">Price: {prog.price}</Typography>
         )}
 
         {/* Edit and Save buttons */}
