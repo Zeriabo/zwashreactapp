@@ -69,10 +69,11 @@ export const signIn = (username, password) => async (dispatch) => {
           }
         )
         .then((data) => {
-          console.log(data);
           dispatch(getServiceProvidersSuccess(data));
         })
-        .catch((err) => dispatch(setError(err)));
+        .catch((err) => {
+          dispatch(setError(err));
+        });
     } else {
       const errorData = response.data;
       console.log(errorData);

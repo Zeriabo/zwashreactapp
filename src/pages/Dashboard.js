@@ -10,8 +10,6 @@ import "./Dashboard.css";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const userstate = useSelector(selectUser);
-  console.log(userstate);
-
   const stations = useSelector((state) => state.station.stations);
   const [serviceProviderId, setServiceProviderId] = useState(0);
   const navigate = useNavigate();
@@ -20,7 +18,6 @@ const Dashboard = () => {
   };
   useEffect(() => {
     if (userstate.loading == false && userstate.error == null) {
-      console.log(userstate.user);
       setServiceProviderId(userstate.user.id);
 
       dispatch(fetchStations(userstate.user.id));

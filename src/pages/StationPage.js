@@ -8,24 +8,33 @@ import { fetchProgramsForStation } from "../slices/programsSlice";
 import ProgramList from "../components/ProgramList";
 const StationPage = () => {
   const { stationId } = useParams();
+  const dispatch = useDispatch();
+  const [defaultLocation, setDefaultLocation] = useState({
+    lat: 0,
+    lng: 0,
+  });
   const station = useSelector((state) => {
     return state.station.stations.find((s) => s.id === Number(stationId));
   });
   useEffect(() => {
     dispatch(fetchProgramsForStation(stationId));
+
+    if (station) {
+      console.log(station);
+      setDefaultLocation({
+        lat: station.latitude,
+        lng: station.longitude,
+      });
+      console.log(defaultLocation);
+    }
   }, [stationId]);
-  const DefaultLocation = {
-    lat: station.latitude,
-    lng: station.longitude,
-  };
+
+  console.log(defaultLocation);
   const programs = useSelector((state) => {
     return state.programs.programs;
   });
 
-  console.log(programs);
   const [newAddress, setNewAddress] = useState(""); // State for the new address
-  const dispatch = useDispatch(); // Redux dispatch function
-
   if (!station) {
     return <div>Station not found</div>;
   }
@@ -38,8 +47,8 @@ const StationPage = () => {
   const handleChangeLocation = (lat, lng) => {
     // Handle location change here
     const updatedLocation = {
-      lat: lat !== undefined ? lat : DefaultLocation.lat,
-      lng: lng !== undefined ? lng : DefaultLocation.lng,
+      lat: lat !== undefined ? lat : defaultLocation.lat,
+      lng: lng !== undefined ? lng : defaultLocation.lng,
     };
     // Create a copy of the station object with updated latitude and longitude
     const updatedStation = {
@@ -88,15 +97,18 @@ const StationPage = () => {
         </div>
       ))} */}
       <ProgramList programs={programs} />
-      <MapPicker
-        mapContainerStyle={mapContainerStyle}
-        defaultLocation={DefaultLocation}
-        zoom={13}
-        mapTypeId="roadmap"
-        style={{ height: "400px", marginTop: "20px" }}
-        onChangeLocation={handleChangeLocation}
-        apiKey="AIzaSyDLSwn-vtm6HJwMuAM_iflsezLRB1BkPyA"
-      />
+
+      <div id="map-container">
+        <MapPicker
+          mapContainerStyle={mapContainerStyle}
+          defaultLocation={defaultLocation}
+          zoom={13}
+          mapTypeId="roadmap"
+          style={{ height: "400px", marginTop: "20px" }}
+          onChangeLocation={handleChangeLocation}
+          apiKey="AIzaSyDLSwn-vtm6HJwMuAM_iflsezLRB1BkPyA"
+        />
+      </div>
     </div>
   );
 };
