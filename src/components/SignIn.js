@@ -6,10 +6,10 @@ import {
   Paper,
   CircularProgress, // Add CircularProgress for loading indicator
 } from "@mui/material";
-import { signIn } from "../slices/userSlice";
+import { signIn, setError } from "../slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser, selectLoading, selectError } from "../slices/userSlice"; // Add selectors for loading and error states
+import { selectLoading, selectError } from "../slices/userSlice"; // Add selectors for loading and error states
 
 const SignIn = () => {
   const [signInData, setSignInData] = useState({ username: "", password: "" });
@@ -71,9 +71,9 @@ const SignIn = () => {
             Sign In
           </Button>
         )}
-        {error && ( // Display error message if sign-in fails
+        {error && (
           <Typography color="error" variant="body2">
-            {error}
+            {error.message} {/* Display the error message */}
           </Typography>
         )}
       </form>

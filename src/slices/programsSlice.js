@@ -32,7 +32,6 @@ export const fetchProgramsForStation = createAsyncThunk(
       if (response.errors) {
         throw new Error("GraphQL query error");
       }
-      console.log(response);
       // Extract the programs from the response data
       const programs = response.data;
 
@@ -103,7 +102,6 @@ const programsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchProgramsForStation.fulfilled, (state, action) => {
-        console.log(action);
         state.loading = false;
         state.error = null;
         state.programs = action.payload.getStationPrograms;

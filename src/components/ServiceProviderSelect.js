@@ -24,7 +24,7 @@ const ServiceProviderSelect = () => {
     //  dispatch an action to fetch stations
     dispatch(fetchStations(selectedId));
   };
-
+  console.log(serviceProviders);
   return (
     <div>
       <h3>Select a Service Provider:</h3>
@@ -33,7 +33,7 @@ const ServiceProviderSelect = () => {
         onChange={handleServiceProviderChange}
       >
         <option value={0}>Select a Service Provider</option>
-        {serviceProviders.map((provider) => (
+        {serviceProviders.data.map((provider) => (
           <option key={provider.id} value={provider.id}>
             {provider.name}
           </option>

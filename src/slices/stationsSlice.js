@@ -97,7 +97,7 @@ export const updateStationAddress =
       console.log(stationWithNewAddress);
       // Make an API request to update the station's address
       const response = await axios.put(
-        `http://localhost:7001/v1/stations/${stationId}`,
+        `http://localhost:7001/v1/stations/address/${stationId}`,
         stationWithNewAddress
       );
 

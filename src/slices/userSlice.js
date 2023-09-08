@@ -41,44 +41,46 @@ export const signIn = (username, password) => async (dispatch) => {
     //   .catch((err) => console.log(err));
 
     // API request to sign in the user
-    const response = await axios.post(
-      "http://localhost:7001/v1/service-provider-users/signin",
-      {
-        username: username,
-        password: password,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+    await axios
+      .post(
+        "http://localhost:7001/v1/service-provider-users/signin",
+        {
+          username: username,
+          password: password,
         },
-      }
-    );
-
-    if (response.status === 200) {
-      const userData = response.data;
-      dispatch(setUser(userData));
-      dispatch(setLoading(false));
-      // Fetch the list of service providers and update the state
-      const serviceProvidersResponse = await axios
-        .get(
-          `http://localhost:7001/v1/serviceproviders/user/${userData.username}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((data) => {
-          dispatch(getServiceProvidersSuccess(data));
-        })
-        .catch((err) => {
-          dispatch(setError(err));
-        });
-    } else {
-      const errorData = response.data;
-      console.log(errorData);
-      dispatch(setError(errorData.message));
-    }
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then(async (userData) => {
+        console.log(userData.data);
+        dispatch(setUser(userData.data));
+        dispatch(setLoading(false));
+        // Fetch the list of service providers and update the state
+        await axios
+          .get(
+            `http://localhost:7001/v1/service-providers/user/${userData.data.username}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((data) => {
+            console.log(data);
+            dispatch(getServiceProvidersSuccess(data));
+            dispatch(setLoading(false));
+          })
+          .catch((err) => {
+            //  dispatch(setError(err));
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(setError(error));
+      });
   } catch (error) {
     console.error("Error signing in:", error);
     dispatch(setError("An error occurred while signing in."));
