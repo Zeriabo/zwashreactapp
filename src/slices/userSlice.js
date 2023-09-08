@@ -1,6 +1,8 @@
 // slices/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import { getServiceProvidersSuccess } from "./serviceProvidersSlice";
+import { fetchUserServiceProviders } from "./serviceProvidersSlice";
+import { fetchStations } from "./stationsSlice";
 import axios from "axios";
 const userSlice = createSlice({
   name: "user",
@@ -55,27 +57,11 @@ export const signIn = (username, password) => async (dispatch) => {
         }
       )
       .then(async (userData) => {
-        console.log(userData.data);
         dispatch(setUser(userData.data));
+        dispatch(fetchStations(userData.data.id));
         dispatch(setLoading(false));
-        // Fetch the list of service providers and update the state
-        await axios
-          .get(
-            `http://localhost:7001/v1/service-providers/user/${userData.data.username}`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then((data) => {
-            console.log(data);
-            dispatch(getServiceProvidersSuccess(data));
-            dispatch(setLoading(false));
-          })
-          .catch((err) => {
-            //  dispatch(setError(err));
-          });
+        dispatch(fetchUserServiceProviders(userData.data.username));
+        dispatch(setLoading(false));
       })
       .catch((error) => {
         console.log(error);

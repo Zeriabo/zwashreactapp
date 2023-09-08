@@ -10,6 +10,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MapPicker from "react-google-map-picker";
 import { useLocation } from "react-router-dom";
 import { selectUser } from "../slices/userSlice";
+
 const DefaultLocation = { lat: 60.1699, lng: 24.9384 };
 const DefaultZoom = 10;
 
@@ -23,14 +24,14 @@ const StationForm = () => {
   const [logoFile, setLogoFile] = useState({}); // Logo file
   const [pictureFile, setPictureFile] = useState({}); // Picture file
   const [defaultLocation, setDefaultLocation] = useState(DefaultLocation);
-
+  const serviceProviders = useSelector(
+    (state) => state.serviceProvider.serviceProviders
+  );
+  const [selectedServiceProviderId, setSelectedServiceProviderId] = useState(0);
   const [location, setLocation] = useState(defaultLocation);
   const [zoom, setZoom] = useState(DefaultZoom);
 
-  useEffect(() => {
-    // Initialize the Google Maps Geocoder here, after the API has loaded
-    const geocoder = new window.google.maps.Geocoder();
-  }, []);
+  useEffect(() => {}, []);
   function handleChangeLocation(lat, lng) {
     console.log(lat, lng);
     setLocation({ lat: lat, lng: lng });
@@ -44,9 +45,14 @@ const StationForm = () => {
     setDefaultLocation({ ...DefaultLocation });
     setZoom(DefaultZoom);
   }
+  const handleServiceProviderChange = (e) => {
+    const selectedId = e.target.value;
+    setSelectedServiceProviderId(selectedId);
+    console.log(selectedServiceProviderId);
+  };
   const handleCreateStation = () => {
-    setServiceProviderId(userstate.user.id);
-    console.log(serviceProviderId);
+    setServiceProviderId(selectedServiceProviderId);
+
     const station = {
       name: stationName,
       address: address,
@@ -83,6 +89,17 @@ const StationForm = () => {
   return (
     <div>
       <h3>Create a New Station</h3>
+      <select
+        value={selectedServiceProviderId}
+        onChange={handleServiceProviderChange}
+      >
+        <option value={0}>Select a Service Provider</option>
+        {serviceProviders.map((provider) => (
+          <option key={provider.id} value={provider.id}>
+            {provider.name}
+          </option>
+        ))}
+      </select>
       <TextField
         label="Station Name"
         variant="outlined"

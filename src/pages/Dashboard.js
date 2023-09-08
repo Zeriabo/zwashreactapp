@@ -6,16 +6,15 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import ServiceProviderSelect from "../components/ServiceProviderSelect";
 import "./Dashboard.css";
-
+import { resetStations } from "../slices/stationsSlice";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const userstate = useSelector(selectUser);
+
   const stations = useSelector((state) => state.station.stations);
+  console.log(stations);
   const [serviceProviderId, setServiceProviderId] = useState(0);
   const navigate = useNavigate();
-  const fetchStationsByServiceProvider = (providerId) => {
-    dispatch(fetchStations(providerId));
-  };
   useEffect(() => {
     if (userstate.loading == false && userstate.error == null) {
       setServiceProviderId(userstate.user.id);

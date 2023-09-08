@@ -22,7 +22,7 @@ export const { getServiceProvidersSuccess, createServiceProviderSuccess } =
 // Async action to fetch all service providers of a user
 export const fetchUserServiceProviders = (username) => async (dispatch) => {
   axios
-    .get(`http://localhost:7001/v1/service-providers/user?username=${username}`)
+    .get(`http://localhost:7001/v1/service-providers/user/${username}`)
     .then((response) => dispatch(getServiceProvidersSuccess(response.data)))
     .catch((err) => console.log(err));
 };

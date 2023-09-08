@@ -6,13 +6,13 @@ const stationsSlice = createSlice({
   initialState: {
     stations: [],
   },
+  error: null,
   reducers: {
     getStationsSuccess: (state, action) => {
-      console.log(action);
-      state.stations = action.payload;
+      console.log(action.payload.data);
+      state.stations = action.payload.data;
     },
     updateStationAddressSuccess: (state, action) => {
-      console.log(action);
       // Update the address of the station in the state
       const updatedStation = action.payload;
       const updatedStations = state.stations.map((station) => {
@@ -23,19 +23,29 @@ const stationsSlice = createSlice({
       });
       state.stations = updatedStations;
     },
+    stationError: (state, action) => {
+      state.error = action.payload;
+    },
+    resetStations: (state) => {
+      state.stations = [];
+      state.error = null;
+    },
   },
 });
 
-export const { getStationsSuccess, updateStationAddressSuccess } =
-  stationsSlice.actions;
+export const {
+  getStationsSuccess,
+  updateStationAddressSuccess,
+  stationError,
+  resetStations,
+} = stationsSlice.actions;
 
 export const fetchStations = (id) => async (dispatch) => {
   try {
-    console.log(id);
     // Make an API request to get the station of a service provider
     axios
       .get("http://localhost:7001/v1/stations/service-provider/" + id)
-      .then((payload) => dispatch(getStationsSuccess(payload.data)))
+      .then((payload) => dispatch(getStationsSuccess(payload)))
       .catch((error) => console.error("Error fetching stations:", error));
   } catch (error) {
     console.error("Error fetching stations:", error);
@@ -67,7 +77,7 @@ export const createStation = (station) => async (dispatch) => {
       .then((response) => response.json())
       .then((data) => dispatch(getStationsSuccess(data)))
       .then((data) => console.log(data))
-      .catch((err) => console.error(err));
+      .catch((err) => dispatch(stationError(err)));
   } catch (error) {
     console.error("Error getting stations: ", error);
   }

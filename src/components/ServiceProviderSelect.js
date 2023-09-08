@@ -10,7 +10,7 @@ const ServiceProviderSelect = () => {
   const serviceProviders = useSelector(
     (state) => state.serviceProvider.serviceProviders
   );
-
+  console.log(serviceProviders);
   useEffect(() => {
     if (userstate.loading === false && userstate.error === null) {
       dispatch(fetchUserServiceProviders(userstate.user.username));
@@ -33,7 +33,7 @@ const ServiceProviderSelect = () => {
         onChange={handleServiceProviderChange}
       >
         <option value={0}>Select a Service Provider</option>
-        {serviceProviders.data.map((provider) => (
+        {serviceProviders.map((provider) => (
           <option key={provider.id} value={provider.id}>
             {provider.name}
           </option>
