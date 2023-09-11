@@ -47,7 +47,7 @@ const Dashboard = () => {
         <div className="station-list">
           <h3>List of Stations:</h3>
           <ul>
-            {stations.map((station) => (
+            {stations?.map((station) => (
               <li key={station.id}>
                 {station.name}
                 <button onClick={() => handleEditStation(station.id)}>

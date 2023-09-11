@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import MapPicker from "react-google-map-picker";
-import { updateStationAddress } from "../slices/stationsSlice";
+import { updateStationAddress, deleteStation } from "../slices/stationsSlice";
 import { useDispatch } from "react-redux";
 import { fetchProgramsForStation } from "../slices/programsSlice";
 import ProgramList from "../components/ProgramList";
@@ -12,26 +12,30 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
+  IconButton,
+  Dialog, // Import Dialog component
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import { CheckCircle, TempleBuddhist } from "@mui/icons-material";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-
+import { CheckCircle, Delete } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 const StationPage = () => {
   const { stationId } = useParams();
   const dispatch = useDispatch();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [stationAddress, setStationAddress] = useState(""); // State for the station address
-  const [tempAddress, setTempAddress] = useState(""); // State for temporary address during confirmation
+  const [stationAddress, setStationAddress] = useState("");
+  const [tempAddress, setTempAddress] = useState("");
   const [tempLocation, setTempLocation] = useState({});
+  const navigate = useNavigate();
   const station = useSelector((state) => {
     return state.station.stations.find((s) => s.id === Number(stationId));
   });
+
   useEffect(() => {
     dispatch(fetchProgramsForStation(stationId));
   }, [stationId]);
+
   const [DefaultLocation, setDefaultLocation] = useState({
     lat: station.latitude,
     lng: station.longitude,
@@ -40,8 +44,13 @@ const StationPage = () => {
     return state.programs.programs;
   });
 
-  const [updateSuccess, setUpdateSuccess] = useState(false); // State for update success snackbar
-  const [loading, setLoading] = useState(false); // State for loading indicator
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState(false);
+
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false); // State for confirmation dialog
 
   if (!station) {
     return <div>Station not found</div>;
@@ -53,27 +62,22 @@ const StationPage = () => {
   };
 
   const handleChangeLocation = (lat, lng) => {
-    // Handle location change here
     const updatedLocation = {
       lat: lat !== undefined ? lat : DefaultLocation.lat,
       lng: lng !== undefined ? lng : DefaultLocation.lng,
     };
-    // Create a copy of the station object with updated latitude and longitude
 
     setTempLocation(updatedLocation);
-    // Show a confirmation dialog before changing the address
-
     setIsDialogOpen(true);
   };
+
   const handleCancelUpdateAddress = () => {
     setDefaultLocation(DefaultLocation);
-    console.log(DefaultLocation);
     setIsDialogOpen(false);
   };
-  const handleUpdateAddress = async () => {
-    // Optionally, you can clear the input field or show a success message
-    setLoading(true);
 
+  const handleUpdateAddress = async () => {
+    setLoading(true);
     setIsDialogOpen(false);
 
     const updatedStation = {
@@ -86,10 +90,7 @@ const StationPage = () => {
       // Simulate an API request with a delay (you can replace this with your actual API call)
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Dispatch the action to update the address
       dispatch(updateStationAddress(stationId, updatedStation));
-
-      // Display the success message and change the pointer on the map
       setUpdateSuccess(true);
       setDefaultLocation(tempLocation);
     } catch (error) {
@@ -99,12 +100,56 @@ const StationPage = () => {
     }
   };
 
+  const handleDeleteStation = () => {
+    setConfirmDeleteDialogOpen(true); // Open the confirmation dialog
+  };
+
+  const handleConfirmDelete = () => {
+    dispatch(deleteStation(stationId))
+      .then(() => {
+        setDeleteSuccess(true);
+        setDeleteSnackbarOpen(true);
+        setConfirmDeleteDialogOpen(false); // Close the confirmation dialog
+      })
+      .catch((error) => {
+        console.error("Error deleting station:", error);
+      });
+    navigate("dashboard");
+  };
+
+  const handleDeleteSnackbarClose = () => {
+    setDeleteSnackbarOpen(false);
+  };
+
+  const handleConfirmDeleteDialogClose = () => {
+    setConfirmDeleteDialogOpen(false); // Close the confirmation dialog
+  };
   const handleCloseSnackbar = () => {
     setUpdateSuccess(false);
+  };
+  const handleAddProgram = () => {
+    navigate(`/AddProgram/${stationId}`);
   };
 
   return (
     <div>
+      <Dialog
+        open={confirmDeleteDialogOpen}
+        onClose={handleConfirmDeleteDialogClose}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this station?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmDelete} color="primary">
+            Confirm
+          </Button>
+          <Button onClick={handleConfirmDeleteDialogClose} color="secondary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
         <DialogTitle>Confirm Address Change</DialogTitle>
         <DialogContent>
@@ -124,29 +169,42 @@ const StationPage = () => {
       <h2>Station Details</h2>
       <p>Name: {station.name}</p>
       <p>Address: {station.address}</p>
-
-      {/* Input field for the new address */}
       <div>
         <label htmlFor="newAddress">New Address:</label>
         <input
           type="text"
           id="newAddress"
-          value={tempAddress} // Use tempAddress for input value
+          value={tempAddress}
           onChange={(e) => setTempAddress(e.target.value)}
         />
       </div>
-
-      {/* Button to update the address */}
       <Button
         variant="contained"
         color="primary"
-        onClick={handleChangeLocation} // Show confirmation dialog on button click
+        onClick={handleChangeLocation}
         disabled={loading}
       >
         Update Address
       </Button>
+      <IconButton
+        onClick={handleDeleteStation}
+        color="error"
+        aria-label="delete"
+        disabled={loading}
+      >
+        <Delete />
+      </IconButton>
       {loading && <CircularProgress />}
+
       <ProgramList programs={programs} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddProgram}
+        disabled={loading}
+      >
+        Add program
+      </Button>
       <MapPicker
         mapContainerStyle={mapContainerStyle}
         defaultLocation={DefaultLocation}
@@ -156,7 +214,6 @@ const StationPage = () => {
         onChangeLocation={handleChangeLocation}
         apiKey="AIzaSyDLSwn-vtm6HJwMuAM_iflsezLRB1BkPyA"
       />
-      {/* Snackbar for update success */}
       <Snackbar
         open={updateSuccess}
         autoHideDuration={4000}
@@ -165,6 +222,16 @@ const StationPage = () => {
       >
         <Alert severity="success" icon={<CheckCircle />}>
           Address updated successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={deleteSnackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleDeleteSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert severity="success" icon={<CheckCircle />}>
+          Station deleted successfully!
         </Alert>
       </Snackbar>
     </div>

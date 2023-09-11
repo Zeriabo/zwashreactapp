@@ -30,6 +30,11 @@ const stationsSlice = createSlice({
       state.stations = [];
       state.error = null;
     },
+    deleteStation: (state, action) => {
+      state.stations = state.stations.filter(
+        (station) => station.id !== action.payload
+      );
+    },
   },
 });
 
@@ -82,19 +87,23 @@ export const createStation = (station) => async (dispatch) => {
     console.error("Error getting stations: ", error);
   }
 };
-
+const removeStation = (id) => ({
+  type: "stations/removeStation",
+  payload: id,
+});
 export const deleteStation = (id) => async (dispatch) => {
   try {
     // Make an API request to sign in the user
-    await fetch("http://localhost:7001/v1/stations" + id, {
+    await fetch("http://localhost:7001/v1/stations/" + id, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     })
       .then((response) => response.json())
-      .then((data) => dispatch(getStationsSuccess(data)))
+
       .then((data) => console.log(data))
+      .then(() => dispatch(removeStation(id)))
       .catch((err) => console.error(err));
   } catch (error) {
     console.error("Error getting stations: ", error);

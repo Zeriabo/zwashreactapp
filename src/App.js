@@ -10,6 +10,7 @@ import StationPage from "./pages/StationPage";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import StationForm from "./pages/StationForm";
 import ProgramDetail from "./components/ProgramDetail";
+import AddProgram from "./components/AddProgram";
 function App() {
   return (
     <Container maxWidth="sm">
@@ -23,6 +24,7 @@ function App() {
             <Route path="/create-station" element={<StationForm />} />
             <Route path="/station/:stationId" element={<StationPage />} />
             <Route path="/program/:id" element={<ProgramDetail />} />
+            <Route path="/addProgram/:stationId" element={<AddProgram />} />
           </Routes>
         </Router>
       </Box>
