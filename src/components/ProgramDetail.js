@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import { Link } from "react-router-dom";
-import { updateProgram } from "../slices/programsSlice";
+import { updateProgram, deleteProgram } from "../slices/programsSlice";
 
 const ProgramDetail = () => {
   const dispatch = useDispatch();
@@ -25,9 +24,7 @@ const ProgramDetail = () => {
     // Handle save logic here (e.g., dispatch an action to update the program)
     // You can use the `editedProgram` state to get the updated data
     console.log("Program saved:", editedProgram);
-    // After saving, exit edit mode
 
-    setProg(editedProgram);
     dispatch(updateProgram(editedProgram))
       .then(() => {
         // Handle success, e.g., show a success message
@@ -37,7 +34,26 @@ const ProgramDetail = () => {
         // Handle error, e.g., show an error message
         console.error("Error updating program:", error);
       });
+
     toggleEditMode();
+  };
+
+  const handleDelete = () => {
+    // Handle delete logic here (e.g., dispatch an action to delete the program)
+    // You may want to show a confirmation dialog before deleting
+
+    dispatch(deleteProgram(prog.id))
+      .then((result) => {
+        if (result.error) {
+          console.error("Error deleting program:", result.error);
+        } else {
+          console.log(result);
+        }
+      })
+      .catch((error) => {
+        // Handle error, e.g., show an error message
+        console.error("Error deleting program:", error);
+      });
   };
 
   if (!program) {
@@ -96,28 +112,48 @@ const ProgramDetail = () => {
 
         {/* Edit and Save buttons */}
         {editMode ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-            style={{ marginTop: "16px" }}
-          >
-            Save
-          </Button>
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              style={{ marginTop: "16px", marginRight: "8px" }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={toggleEditMode}
+              style={{ marginTop: "16px" }}
+            >
+              Cancel
+            </Button>
+          </div>
         ) : (
           <Button
             variant="contained"
             color="primary"
             onClick={toggleEditMode}
-            style={{ marginTop: "16px" }}
+            style={{ marginTop: "16px", marginRight: "8px" }}
           >
             Edit
           </Button>
         )}
 
+        {/* Delete button */}
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleDelete}
+          style={{ marginTop: "16px" }}
+        >
+          Delete
+        </Button>
+
         <Button
           component={Link}
-          to={"/dashboard"} // Adjust the path as needed
+          to="/dashboard" // Adjust the path as needed
           variant="contained"
           color="primary"
           style={{ marginTop: "16px", marginLeft: "8px" }}

@@ -117,7 +117,31 @@ export const updateProgram = createAsyncThunk(
     }
   }
 );
+// delete a program
+export const deleteProgram = createAsyncThunk(
+  "programs/deleteProgram",
+  async (programId, { rejectWithValue }) => {
+    try {
+      console.log(programId);
+      // Make an API request to update an existing car washing program
+      const response = await fetch(
+        `http://localhost:7001/v1/programs/` + programId,
+        {
+          method: "DELETE",
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error("Failed to update the program");
+      } else {
+        console.log(response);
+      }
+      return true;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 // Create a slice for the programs
 const programsSlice = createSlice({
   name: "programs",
@@ -155,6 +179,17 @@ const programsSlice = createSlice({
         // Update the program in the programs array with the updated data
         if (updatedProgramIndex !== -1) {
           state.programs[updatedProgramIndex] = action.payload;
+        }
+      })
+      .addCase(deleteProgram.fulfilled, (state, action) => {
+        // Find the index of the updated program in the programs array
+        const deletedProgramIndex = state.programs.findIndex(
+          (program) => program.id === action.payload.id
+        );
+
+        // Update the program in the programs array with the updated data
+        if (deletedProgramIndex !== -1) {
+          state.programs.splice(deletedProgramIndex, 1);
         }
       });
   },
