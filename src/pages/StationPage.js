@@ -6,6 +6,7 @@ import { updateStationAddress, deleteStation } from "../slices/stationsSlice";
 import { useDispatch } from "react-redux";
 import { fetchProgramsForStation } from "../slices/programsSlice";
 import ProgramList from "../components/ProgramList";
+import { updateStation } from "../slices/stationsSlice";
 import {
   Button,
   TextField,
@@ -25,7 +26,6 @@ const StationPage = () => {
   const dispatch = useDispatch();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [stationAddress, setStationAddress] = useState("");
-  const [tempAddress, setTempAddress] = useState("");
   const [tempLocation, setTempLocation] = useState({});
   const navigate = useNavigate();
   const station = useSelector((state) => {
@@ -34,6 +34,7 @@ const StationPage = () => {
 
   useEffect(() => {
     dispatch(fetchProgramsForStation(stationId));
+    setStationAddress(station.address);
   }, [stationId]);
 
   const [DefaultLocation, setDefaultLocation] = useState({
@@ -60,7 +61,23 @@ const StationPage = () => {
     width: "100%",
     height: "400px",
   };
+  const handleChangeAddress = async () => {
+    try {
+      const updatedStation = {
+        ...station,
+        address: stationAddress,
+      };
+      // Simulate an API request with a delay (you can replace this with your actual API call)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
+      dispatch(updateStation(stationId, updatedStation));
+      setUpdateSuccess(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleChangeLocation = (lat, lng) => {
     const updatedLocation = {
       lat: lat !== undefined ? lat : DefaultLocation.lat,
@@ -155,7 +172,7 @@ const StationPage = () => {
         <DialogContent>
           Are you sure you want to change the address to the following address?
           <br />
-          <strong>{tempAddress}</strong>
+          <strong>{stationAddress}</strong>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleCancelUpdateAddress()} color="primary">
@@ -174,14 +191,14 @@ const StationPage = () => {
         <input
           type="text"
           id="newAddress"
-          value={tempAddress}
-          onChange={(e) => setTempAddress(e.target.value)}
+          value={stationAddress}
+          onChange={(e) => setStationAddress(e.target.value)}
         />
       </div>
       <Button
         variant="contained"
         color="primary"
-        onClick={handleChangeLocation}
+        onClick={handleChangeAddress}
         disabled={loading}
       >
         Update Address

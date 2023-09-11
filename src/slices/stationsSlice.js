@@ -127,4 +127,21 @@ export const updateStationAddress =
     }
   };
 
+export const updateStation =
+  (stationId, stationWithNewAddress) => async (dispatch) => {
+    try {
+      console.log(stationWithNewAddress);
+      // Make an API request to update the station's address
+      const response = await axios.put(
+        `http://localhost:7001/v1/stations/${stationId}`,
+        stationWithNewAddress
+      );
+
+      // Dispatch the success action with the updated station data
+      dispatch(updateStationAddressSuccess(response.data));
+    } catch (error) {
+      console.error("Error updating station address:", error);
+    }
+  };
+
 export default stationsSlice.reducer;
