@@ -18,16 +18,14 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 const theme = createTheme({
-  // Customize your theme here
   palette: {
     primary: {
-      main: "#007bff", // Your primary color
+      main: "#007bff",
     },
     secondary: {
-      main: "#ff5722", // Your secondary color
+      main: "#ff5722",
     },
   },
-  // Add more theme configurations as needed
 });
 
 const Dashboard = () => {
