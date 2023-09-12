@@ -28,6 +28,11 @@ const StationPage = () => {
   const [stationAddress, setStationAddress] = useState("");
   const [tempLocation, setTempLocation] = useState({});
   const navigate = useNavigate();
+
+  const mapContainerStyle = {
+    width: "100%",
+    height: "400px",
+  };
   const station = useSelector((state) => {
     return state.station.stations.find((s) => s.id === Number(stationId));
   });
@@ -36,6 +41,15 @@ const StationPage = () => {
     dispatch(fetchProgramsForStation(stationId));
     setStationAddress(station.address);
   }, [stationId]);
+  useEffect(() => {
+    // Simulate a delay before showing the map (e.g., 2 seconds)
+    const delay = setTimeout(() => {
+      setShowMap(true);
+    }, 500);
+
+    // Cleanup the timeout when the component unmounts
+    return () => clearTimeout(delay);
+  }, []); // Call useEffect with an empty dependency array
 
   const [DefaultLocation, setDefaultLocation] = useState({
     lat: station.latitude,
@@ -44,7 +58,7 @@ const StationPage = () => {
   const programs = useSelector((state) => {
     return state.programs.programs;
   });
-
+  const [showMap, setShowMap] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,10 +71,6 @@ const StationPage = () => {
     return <div>Station not found</div>;
   }
 
-  const mapContainerStyle = {
-    width: "100%",
-    height: "400px",
-  };
   const handleChangeAddress = async () => {
     try {
       const updatedStation = {
@@ -157,6 +167,40 @@ const StationPage = () => {
       >
         Back
       </Button>
+      <div>
+        {showMap && (
+          <MapPicker
+            mapContainerStyle={mapContainerStyle}
+            defaultLocation={DefaultLocation}
+            zoom={13}
+            mapTypeId="roadmap"
+            style={{ height: "400px", marginTop: "20px" }}
+            onChangeLocation={handleChangeLocation}
+            apiKey="AIzaSyDLSwn-vtm6HJwMuAM_iflsezLRB1BkPyA"
+          />
+        )}
+      </div>
+
+      <Snackbar
+        open={updateSuccess}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert severity="success" icon={<CheckCircle />}>
+          Address updated successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={deleteSnackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleDeleteSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert severity="success" icon={<CheckCircle />}>
+          Station deleted successfully!
+        </Alert>
+      </Snackbar>
       <Dialog
         open={confirmDeleteDialogOpen}
         onClose={handleConfirmDeleteDialogClose}
@@ -229,35 +273,6 @@ const StationPage = () => {
       >
         Add program
       </Button>
-      <MapPicker
-        mapContainerStyle={mapContainerStyle}
-        defaultLocation={DefaultLocation}
-        zoom={13}
-        mapTypeId="roadmap"
-        style={{ height: "400px", marginTop: "20px" }}
-        onChangeLocation={handleChangeLocation}
-        apiKey="AIzaSyDLSwn-vtm6HJwMuAM_iflsezLRB1BkPyA"
-      />
-      <Snackbar
-        open={updateSuccess}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert severity="success" icon={<CheckCircle />}>
-          Address updated successfully!
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={deleteSnackbarOpen}
-        autoHideDuration={4000}
-        onClose={handleDeleteSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert severity="success" icon={<CheckCircle />}>
-          Station deleted successfully!
-        </Alert>
-      </Snackbar>
     </div>
   );
 };

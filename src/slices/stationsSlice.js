@@ -9,7 +9,6 @@ const stationsSlice = createSlice({
   error: null,
   reducers: {
     getStationsSuccess: (state, action) => {
-      console.log(action.payload.data);
       state.stations = action.payload.data;
     },
     updateStationAddressSuccess: (state, action) => {
@@ -58,8 +57,6 @@ export const fetchStations = (id) => async (dispatch) => {
 };
 
 export const createStation = (station) => async (dispatch) => {
-  console.log(station.data);
-
   // Construct the URL with all request parameters as query parameters
   const url = new URL("http://localhost:7001/v1/stations/");
   url.searchParams.append("name", station.data.name);
@@ -113,7 +110,6 @@ export const deleteStation = (id) => async (dispatch) => {
 export const updateStationAddress =
   (stationId, stationWithNewAddress) => async (dispatch) => {
     try {
-      console.log(stationWithNewAddress);
       // Make an API request to update the station's address
       const response = await axios.put(
         `http://localhost:7001/v1/stations/address/${stationId}`,
@@ -130,7 +126,6 @@ export const updateStationAddress =
 export const updateStation =
   (stationId, stationWithNewAddress) => async (dispatch) => {
     try {
-      console.log(stationWithNewAddress);
       // Make an API request to update the station's address
       const response = await axios.put(
         `http://localhost:7001/v1/stations/${stationId}`,

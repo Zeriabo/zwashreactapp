@@ -33,7 +33,6 @@ const Dashboard = () => {
   const userstate = useSelector(selectUser);
 
   const stations = useSelector((state) => state.station.stations);
-  console.log(stations);
   const [serviceProviderId, setServiceProviderId] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
