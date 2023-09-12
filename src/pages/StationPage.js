@@ -220,7 +220,7 @@ const StationPage = () => {
       </IconButton>
       {loading && <CircularProgress />}
 
-      <ProgramList programs={programs} />
+      <ProgramList programs={programs} stationId={station.id} />
       <Button
         variant="contained"
         color="primary"

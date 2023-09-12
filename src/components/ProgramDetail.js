@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -10,9 +10,13 @@ const ProgramDetail = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const stationId = queryParams.get("stationId");
   const program = useSelector((state) => {
     return state.programs.programs.find((p) => Number(p.id) === Number(id));
   });
+
   const [prog, setProg] = useState(program);
   const [editMode, setEditMode] = useState(false); // Track edit mode
   const [editedProgram, setEditedProgram] = useState(program); // Store edited program data
@@ -66,7 +70,7 @@ const ProgramDetail = () => {
       <Button
         variant="contained"
         color="secondary"
-        onClick={() => navigate("/dashboard")} // Use navigate to specify the route you want to navigate to
+        onClick={() => navigate(`/station/${stationId}`)} // Use navigate to specify the route you want to navigate to
       >
         Back
       </Button>
@@ -157,16 +161,6 @@ const ProgramDetail = () => {
           style={{ marginTop: "16px" }}
         >
           Delete
-        </Button>
-
-        <Button
-          component={Link}
-          to="/dashboard" // Adjust the path as needed
-          variant="contained"
-          color="primary"
-          style={{ marginTop: "16px", marginLeft: "8px" }}
-        >
-          Back
         </Button>
       </Paper>
     </div>
