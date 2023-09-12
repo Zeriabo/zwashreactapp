@@ -7,6 +7,7 @@ import SignIn from "./components/SignIn";
 import Register from "./components/Register";
 import Dashboard from "./pages/Dashboard";
 import StationPage from "./pages/StationPage";
+import Accounting from "./pages/Accounting";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import StationForm from "./pages/StationForm";
 import ProgramDetail from "./components/ProgramDetail";
@@ -31,6 +32,10 @@ function App() {
               <Route path="/station/:stationId" element={<StationPage />} />
               <Route path="/program/:id" element={<ProgramDetail />} />
               <Route path="/addProgram/:stationId" element={<AddProgram />} />
+              <Route
+                path="/station/accounting/:stationId"
+                element={<Accounting />}
+              />
             </Routes>
           </Router>
         </Box>

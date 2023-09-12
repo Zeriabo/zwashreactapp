@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import MapPicker from "react-google-map-picker";
 import { updateStationAddress, deleteStation } from "../slices/stationsSlice";
 import { useDispatch } from "react-redux";
@@ -62,7 +62,6 @@ const StationPage = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState(false);
 
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false); // State for confirmation dialog
@@ -157,7 +156,9 @@ const StationPage = () => {
   const handleAddProgram = () => {
     navigate(`/AddProgram/${stationId}`);
   };
-
+  const handleGoToAccounting = () => {
+    navigate(`/station/accounting/${stationId}`);
+  };
   return (
     <div>
       <Button
@@ -180,6 +181,15 @@ const StationPage = () => {
           />
         )}
       </div>
+
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ marginTop: "20px" }}
+        onClick={handleGoToAccounting}
+      >
+        Accounting
+      </Button>
 
       <Snackbar
         open={updateSuccess}
