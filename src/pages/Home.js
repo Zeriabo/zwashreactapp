@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Container, Typography, Button, Grid } from "@mui/material";
-import SignIn from "../components/SignIn"; // Import the SignIn component
-import Register from "../components/Register"; // Import the Register component
+import { Button, Grid } from "@mui/material";
+import SignIn from "../components/SignIn";
+import Register from "../components/Register";
+import Layout from "../components/Layout"; // Import the Layout component
 
 const Home = () => {
   const [showSignIn, setShowSignIn] = useState(true);
@@ -11,10 +12,7 @@ const Home = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h4" align="center" gutterBottom>
-        Service provider management
-      </Typography>
+    <Layout>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           {showSignIn ? <SignIn /> : <Register />}
@@ -30,7 +28,7 @@ const Home = () => {
           </Button>
         </Grid>
       </Grid>
-    </Container>
+    </Layout>
   );
 };
 

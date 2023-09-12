@@ -14,7 +14,7 @@ import {
   Alert,
   CircularProgress,
   IconButton,
-  Dialog, // Import Dialog component
+  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -150,6 +150,13 @@ const StationPage = () => {
 
   return (
     <div>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => navigate("/dashboard")} // Use navigate to specify the route you want to navigate to
+      >
+        Back
+      </Button>
       <Dialog
         open={confirmDeleteDialogOpen}
         onClose={handleConfirmDeleteDialogClose}

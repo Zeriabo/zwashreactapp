@@ -141,6 +141,13 @@ const AddProgram = () => {
 
   return (
     <div>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => navigate(`/station/${stationId}`)} // Use navigate to specify the route you want to navigate to
+      >
+        Back
+      </Button>
       <Paper elevation={3} style={{ padding: "16px" }}>
         <Typography variant="h4" gutterBottom>
           Add a New Program
