@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 const stationsSlice = createSlice({
   name: "stations",
   initialState: {
@@ -48,7 +49,7 @@ export const fetchStations = (id) => async (dispatch) => {
   try {
     // Make an API request to get the station of a service provider
     axios
-      .get("http://localhost:7001/v1/stations/service-provider/" + id)
+      .get(`${API_BASE_URL}/v1/stations/service-provider/` + id)
       .then((payload) => dispatch(getStationsSuccess(payload)))
       .catch((error) => console.error("Error fetching stations:", error));
   } catch (error) {
@@ -58,7 +59,7 @@ export const fetchStations = (id) => async (dispatch) => {
 
 export const createStation = (station) => async (dispatch) => {
   // Construct the URL with all request parameters as query parameters
-  const url = new URL("http://localhost:7001/v1/stations/");
+  const url = new URL( `${API_BASE_URL}:8080/stations/`);
   url.searchParams.append("name", station.data.name);
   url.searchParams.append("address", station.data.address);
   url.searchParams.append("latitude", station.data.latitude.toString());
@@ -91,7 +92,7 @@ const removeStation = (id) => ({
 export const deleteStation = (id) => async (dispatch) => {
   try {
     // Make an API request to sign in the user
-    await fetch("http://localhost:7001/v1/stations/" + id, {
+    await fetch(`${API_BASE_URL}:8080/stations/`+ id, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -112,7 +113,7 @@ export const updateStationAddress =
     try {
       // Make an API request to update the station's address
       const response = await axios.put(
-        `http://localhost:7001/v1/stations/address/${stationId}`,
+        `${API_BASE_URL}:8080/stations/address/${stationId}`,
         stationWithNewAddress
       );
 
@@ -128,7 +129,7 @@ export const updateStation =
     try {
       // Make an API request to update the station's address
       const response = await axios.put(
-        `http://localhost:7001/v1/stations/${stationId}`,
+        `${API_BASE_URL}:8080/stations/${stationId}`,
         stationWithNewAddress
       );
 

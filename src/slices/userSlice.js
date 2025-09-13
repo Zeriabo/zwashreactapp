@@ -1,9 +1,11 @@
-// slices/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { getServiceProvidersSuccess } from "./serviceProvidersSlice";
-import { fetchUserServiceProviders } from "./serviceProvidersSlice";
+import { getServiceProvidersSuccess, fetchUserServiceProviders } from "./serviceProvidersSlice";
 import { fetchStations } from "./stationsSlice";
 import axios from "axios";
+
+
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -37,34 +39,20 @@ export const signIn = (username, password) => async (dispatch) => {
   try {
     dispatch(setLoading(true));
 
-    // await axios
-    //   .get(" http://localhost:7001/v1/stations/")
-    //   .then((resul) => console.log(resul))
-    //   .catch((err) => console.log(err));
-
-    // API request to sign in the user
     await axios
       .post(
-        "http://localhost:7001/v1/service-provider-users/signin",
-        {
-          username: username,
-          password: password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        `${API_BASE_URL}:8092/v1/serviceprovideruser/signin`,
+        { username, password },
+        { headers: { "Content-Type": "application/json" } }
       )
       .then(async (userData) => {
         dispatch(setUser(userData.data));
         dispatch(fetchStations(userData.data.id));
-        dispatch(setLoading(false));
         dispatch(fetchUserServiceProviders(userData.data.username));
         dispatch(setLoading(false));
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         dispatch(setError(error));
       });
   } catch (error) {
@@ -72,23 +60,17 @@ export const signIn = (username, password) => async (dispatch) => {
     dispatch(setError("An error occurred while signing in."));
   }
 };
+
 export const registerUser = (user) => async (dispatch) => {
   try {
-    // Make an API request to register the user
-    const response = await fetch(
-      "http://localhost:7001/v1/service-provider-users/create",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}:8092/v1/serviceprovideruser`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    });
 
     if (response.status === 201) {
       const userData = await response.json();
-      // Dispatch the setUser action with the user data
       dispatch(setUser(userData));
     } else {
       console.error("User registration failed");
@@ -97,6 +79,7 @@ export const registerUser = (user) => async (dispatch) => {
     console.error("Error registering user:", error);
   }
 };
+
 export const { setUser, setLoading, setError, logOut } = userSlice.actions;
 
 export const selectUser = (state) => state.user;
