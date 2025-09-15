@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, logOut } from "../slices/userSlice";
-import { fetchStations, deleteStation } from "../slices/stationsSlice";
+import { fetchStations } from "../slices/stationsSlice";
 import { Link, useNavigate } from "react-router-dom";
 import ServiceProviderSelect from "../components/ServiceProviderSelect";
 import "./Dashboard.css";
@@ -15,61 +15,75 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-
 import EditIcon from "@mui/icons-material/Edit";
+
 const theme = createTheme({
   palette: {
-    primary: {
-      main: "#007bff",
-    },
-    secondary: {
-      main: "#ff5722",
-    },
+    primary: { main: "#007bff" },
+    secondary: { main: "#ff5722" },
   },
 });
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const userstate = useSelector(selectUser);
-
-  const stations = useSelector((state) => state.station.stations);
-  const [serviceProviderId, setServiceProviderId] = useState(0);
   const navigate = useNavigate();
+
+  const userstate = useSelector(selectUser);
+  const stations = useSelector((state) => state.station?.stations || []);
+  const selectedServiceProviderId = useSelector(
+    (state) => state.serviceProviders?.selectedServiceProviderId || null
+  );
+
+const [serviceProviderId, setServiceProviderId] = useState(
+  selectedServiceProviderId
+);
+
+  // Sync serviceProviderId with Redux state
   useEffect(() => {
-    if (userstate.loading == false && userstate.error == null) {
-      setServiceProviderId(userstate.user.id);
-
-      dispatch(fetchStations(userstate.user.id));
+    if (selectedServiceProviderId !== null) {
+      setServiceProviderId(selectedServiceProviderId);
+      dispatch(fetchStations(selectedServiceProviderId));
     }
-  }, [dispatch, userstate]);
+  }, [dispatch, selectedServiceProviderId]);
 
-  const handleEditStation = (stationId) => {
-    navigate(`/station/${stationId}`);
-  };
+  // Handle logout
   const handleLogout = () => {
     dispatch(logOut());
     navigate("/");
   };
 
+  const handleEditStation = (stationId) => {
+    navigate(`/station/${stationId}`);
+  };
+
   if (userstate.loading) {
-    // Optionally, you can render a loading indicator or a message here
     return <div>Loading...</div>;
-  } else if (userstate.loading == false && userstate.user != null) {
-    const { username } = userstate.user;
-    return (
-      <ThemeProvider theme={theme}>
-        <div className="dashboard-container">
-          <div className="header">
-            <h2>Welcome, {username ? username : "Guest"}!</h2>
-            <button className="logout-button" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-          <ServiceProviderSelect />
-          <div className="station-list">
-            <Typography variant="h3">List of Stations:</Typography>
-            <List>
-              {stations?.map((station) => (
+  }
+
+  if (!userstate.user) {
+    navigate("/");
+    return null;
+  }
+
+  const { username } = userstate.user;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <div className="dashboard-container">
+        <div className="header">
+          <h2>Welcome, {username || "Guest"}!</h2>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+
+        <ServiceProviderSelect />
+
+        <div className="station-list">
+          <Typography variant="h3">List of Stations:</Typography>
+          <List>
+            {stations.length > 0 ? (
+              stations.map((station) => (
                 <ListItem key={station.id}>
                   <ListItemText primary={station.name} />
                   <ListItemSecondaryAction>
@@ -82,27 +96,23 @@ const Dashboard = () => {
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
-              ))}
-            </List>
-          </div>
-          <div className="create-station-button">
-            <Link
-              to={{
-                pathname: "/create-station",
-              }}
-            >
-              <Button variant="contained" color="primary">
-                Create Station
-              </Button>
-            </Link>
-          </div>
+              ))
+            ) : (
+              <Typography>No stations available.</Typography>
+            )}
+          </List>
         </div>
-      </ThemeProvider>
-    );
-  } else {
-    navigate("/");
-    return null;
-  }
+
+        <div className="create-station-button">
+          <Link to="/create-station">
+            <Button variant="contained" color="primary">
+              Create Station
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </ThemeProvider>
+  );
 };
 
 export default Dashboard;

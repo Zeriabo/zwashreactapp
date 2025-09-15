@@ -58,7 +58,7 @@ const AddProgram = () => {
 
     try {
       // Dispatch an action to create the program
-      dispatch(addProgram(newProgram));
+      dispatch(addProgram({stationId, ...newProgram}));
 
       // Redirect to the program list or any other appropriate page
       //  navigate("/programs");
@@ -69,7 +69,7 @@ const AddProgram = () => {
 
   // Conditional rendering of input fields based on the selected program type
   let inputFields;
-  if (programType === "high_pressure") {
+  if (programType === "HIGH_PRESSURE") {
     inputFields = (
       <div>
         <TextField
@@ -83,7 +83,7 @@ const AddProgram = () => {
         />
       </div>
     );
-  } else if (programType === "foam") {
+  } else if (programType === "FOAM") {
     inputFields = (
       <div>
         <TextField
@@ -114,7 +114,7 @@ const AddProgram = () => {
         />
       </div>
     );
-  } else if (programType === "touch_less") {
+  } else if (programType === "TOUCH_LESS") {
     inputFields = (
       <div>
         <TextField
@@ -159,9 +159,9 @@ const AddProgram = () => {
             onChange={handleProgramTypeChange}
             label="Program Type"
           >
-            <MenuItem value="high_pressure">High Pressure</MenuItem>
-            <MenuItem value="foam">Foam</MenuItem>
-            <MenuItem value="touch_less">Touch-less</MenuItem>
+            <MenuItem value="HIGH_PRESSURE">High Pressure</MenuItem>
+            <MenuItem value="FOAM">Foam</MenuItem>
+            <MenuItem value="TOUCHLESS">Touch-less</MenuItem>
           </Select>
 
           <TextField

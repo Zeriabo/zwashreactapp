@@ -1,50 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUserServiceProviders } from "../slices/serviceProvidersSlice";
-import { selectUser } from "../slices/userSlice";
-import { fetchStations } from "../slices/stationsSlice";
-import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-function useFetchServiceProviders(username, dispatch) {
-  useEffect(() => {
-    if (username) {
-      dispatch(fetchUserServiceProviders(username));
-    }
-  }, [username, dispatch]);
-}
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setSelectedServiceProvider, fetchUserServiceProviders } from "../slices/serviceProvidersSlice";
+
 const ServiceProviderSelect = () => {
   const dispatch = useDispatch();
-  const userstate = useSelector(selectUser);
-  const [selectedServiceProviderId, setSelectedServiceProviderId] = useState(0);
+
+  // Use optional chaining + default empty array
   const serviceProviders = useSelector(
-    (state) => state.serviceProvider.serviceProviders
+    (state) => state.serviceProviders?.list || []
   );
 
-  useFetchServiceProviders(userstate.user.username, dispatch);
+  const selectedServiceProviderId = useSelector(
+    (state) => state.serviceProviders?.selectedServiceProviderId || null
+  );
 
-  const handleServiceProviderChange = (e) => {
-    const selectedId = e.target.value;
-    setSelectedServiceProviderId(selectedId);
-    dispatch(fetchStations(selectedId));
+  useEffect(() => {
+    // Example: fetch service providers for the logged-in user
+    dispatch(fetchUserServiceProviders("username"));
+  }, [dispatch]);
+
+  const handleChange = (e) => {
+    dispatch(setSelectedServiceProvider(e.target.value));
   };
+
+  // Early return if list is empty
+  if (!serviceProviders || serviceProviders.length === 0) {
+    return <div>No service providers available.</div>;
+  }
+
   return (
-    <div>
-      <h3>Select a Service Provider:</h3>
-      <FormControl variant="outlined" fullWidth>
-        <InputLabel>Service Provider</InputLabel>
-        <Select
-          value={selectedServiceProviderId}
-          onChange={handleServiceProviderChange}
-          label="Service Provider"
-        >
-          <MenuItem value={0}>Select a Service Provider</MenuItem>
-          {serviceProviders.map((provider) => (
-            <MenuItem key={provider.id} value={provider.id}>
-              {provider.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </div>
+    <select value={selectedServiceProviderId || ""} onChange={handleChange}>
+      {serviceProviders.map((sp) => (
+        <option key={sp.id} value={sp.id}>
+          {sp.name}
+        </option>
+      ))}
+    </select>
   );
 };
 

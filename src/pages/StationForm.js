@@ -4,18 +4,13 @@ import { createStation, deleteStation } from "../slices/stationsSlice";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import MapPicker from "react-google-map-picker";
-import { useLocation } from "react-router-dom";
 import { selectUser } from "../slices/userSlice";
 
 const DefaultLocation = { lat: 60.1699, lng: 24.9384 };
 const DefaultZoom = 10;
 
 const StationForm = () => {
-  const [serviceProviderId, setServiceProviderId] = useState(0);
   const dispatch = useDispatch();
   const [stationName, setStationName] = useState("");
   const [address, setAddress] = useState("");
@@ -24,9 +19,9 @@ const StationForm = () => {
   const [logoFile, setLogoFile] = useState({}); // Logo file
   const [pictureFile, setPictureFile] = useState({}); // Picture file
   const [defaultLocation, setDefaultLocation] = useState(DefaultLocation);
-  const serviceProviders = useSelector(
-    (state) => state.serviceProvider.serviceProviders
-  );
+const serviceProviders = useSelector(
+  (state) => state.serviceProviders?.list || []
+);
   const [selectedServiceProviderId, setSelectedServiceProviderId] = useState(0);
   const [location, setLocation] = useState(defaultLocation);
   const [zoom, setZoom] = useState(DefaultZoom);
@@ -51,7 +46,8 @@ const StationForm = () => {
     console.log(selectedServiceProviderId);
   };
   const handleCreateStation = () => {
-    setServiceProviderId(selectedServiceProviderId);
+    console.log("Selected Service Provider ID:", selectedServiceProviderId);
+
 
     const station = {
       name: stationName,
@@ -62,7 +58,7 @@ const StationForm = () => {
       },
       latitude: location.lat,
       longitude: location.lng,
-      serviceProvider: serviceProviderId,
+      serviceProvider: selectedServiceProviderId,
     };
 
     console.log("Request Data:", JSON.stringify(station)); // Log the request data

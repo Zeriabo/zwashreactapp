@@ -1,39 +1,32 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { gql } from "@apollo/client";
 import apolloClient from "../apollo";
-// Define an initial state for the programs slice
+const API_BASE_URL = process.env.REACT_APP_API_SERVER_URL;
+
 const initialState = {
-  programs: [], // Store the list of car washing programs
+  programs: [],   
   loading: false,
-  error: null,
+  error: null,  
 };
-const GET_PROGRAMS_FOR_STATION = gql`
-  query GetStationPrograms($stationId: ID!) {
-    getStationPrograms(stationId: $stationId) {
-      id
-      programType
-      description
-      price
-    }
-  }
-`;
-// Define an async thunk to fetch car washing programs for a station
+
+
 export const fetchProgramsForStation = createAsyncThunk(
   "programs/fetchProgramsForStation",
   async (stationId, { rejectWithValue }) => {
     try {
-      // Use Apollo Client to send the GraphQL query
-      const response = await apolloClient.query({
-        query: GET_PROGRAMS_FOR_STATION,
-        variables: { stationId },
-      });
+      const res = await fetch(`${API_BASE_URL}:8080/stations/washes?id=${stationId}`);
+      if (!res.ok) throw new Error("Failed to fetch programs");
 
-      // Check for errors in the GraphQL response
-      if (response.errors) {
-        throw new Error("GraphQL query error");
-      }
-      // Extract the programs from the response data
-      const programs = response.data;
+      const data = await res.json();
+
+      const programs = data.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        duration: p.duration,
+        programType: p.programType,
+      }));
 
       return programs;
     } catch (error) {
@@ -42,28 +35,33 @@ export const fetchProgramsForStation = createAsyncThunk(
   }
 );
 
-// Define an async thunk to add a new car washing program
+
 export const addProgram = createAsyncThunk(
   "programs/addProgram",
-  async (programData, { rejectWithValue }) => {
+  async ({ stationId, ...programData }, { rejectWithValue }) => {
     try {
-      // Make an API request to add a new car washing program
-      const response = await fetch("http://localhost:7001/v1/programs/", {
+
+      const response = await fetch(`${API_BASE_URL}:8080/stations/programs/${stationId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(programData),
       });
+
       if (!response.ok) {
         throw new Error("Failed to add a program");
       }
-      return programData;
+
+
+      const createdProgram = await response.json();
+      return createdProgram;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 // Define an async thunk to remove a car washing program
 export const removeProgram = createAsyncThunk(
@@ -72,7 +70,7 @@ export const removeProgram = createAsyncThunk(
     try {
       // Make an API request to remove the car washing program with the specified programId
       const response = await fetch(
-        `http://localhost:7001/v1/programs/${programId}`,
+        `${API_BASE_URL}/programs/${programId}`,
         {
           method: "POST",
           headers: {
@@ -96,7 +94,7 @@ export const updateProgram = createAsyncThunk(
     try {
       // Make an API request to update an existing car washing program
       const response = await fetch(
-        `http://localhost:7001/v1/programs/${programData.id}`, // Use the program's ID to identify the program to update
+        `${API_BASE_URL}/programs/${programData.id}`, // Use the program's ID to identify the program to update
         {
           method: "PUT", // Use the PUT method for updates
           headers: {
@@ -122,75 +120,51 @@ export const deleteProgram = createAsyncThunk(
   "programs/deleteProgram",
   async (programId, { rejectWithValue }) => {
     try {
-      console.log(programId);
-      // Make an API request to update an existing car washing program
-      const response = await fetch(
-        `http://localhost:7001/v1/programs/` + programId,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update the program");
-      } else {
-        console.log(response);
-      }
-      return true;
+      const res = await fetch(`${API_BASE_URL}:8080/programs/${programId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete program");
+      return programId;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
-);
-// Create a slice for the programs
+)
+// Slice
 const programsSlice = createSlice({
   name: "programs",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch
       .addCase(fetchProgramsForStation.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchProgramsForStation.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = null;
-        state.programs = action.payload.getStationPrograms;
+        state.programs = action.payload;
       })
       .addCase(fetchProgramsForStation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
+
+      // Add
       .addCase(addProgram.fulfilled, (state, action) => {
         state.programs.push(action.payload);
       })
-      .addCase(removeProgram.fulfilled, (state, action) => {
-        state.programs = state.programs.filter(
-          (program) => program.id !== action.payload
-        );
-      })
+
+      // Update
       .addCase(updateProgram.fulfilled, (state, action) => {
-        // Find the index of the updated program in the programs array
-        const updatedProgramIndex = state.programs.findIndex(
-          (program) => program.id === action.payload.id
-        );
-
-        // Update the program in the programs array with the updated data
-        if (updatedProgramIndex !== -1) {
-          state.programs[updatedProgramIndex] = action.payload;
-        }
+        const index = state.programs.findIndex((p) => p.id === action.payload.id);
+        if (index !== -1) state.programs[index] = action.payload;
       })
-      .addCase(deleteProgram.fulfilled, (state, action) => {
-        // Find the index of the updated program in the programs array
-        const deletedProgramIndex = state.programs.findIndex(
-          (program) => program.id === action.payload.id
-        );
 
-        // Update the program in the programs array with the updated data
-        if (deletedProgramIndex !== -1) {
-          state.programs.splice(deletedProgramIndex, 1);
-        }
+      // Delete
+      .addCase(deleteProgram.fulfilled, (state, action) => {
+        state.programs = state.programs.filter((p) => p.id !== action.payload);
       });
   },
 });

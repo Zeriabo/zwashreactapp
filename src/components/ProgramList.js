@@ -1,23 +1,23 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Card, CardContent, Typography, IconButton } from "@mui/material";
+import { CheckCircle, Delete } from "@mui/icons-material";
 
-const ProgramList = ({ programs, stationId }) => {
+const ProgramList = ({ programs, onDeleteProgram }) => {
   return (
     <div>
-      <h2>Car Washing Programs</h2>
-      <ul>
-        {programs.map((program) => (
-          <li key={program.id}>
-            <Link to={`/program/${program.id}?stationId=${stationId}`}>
-              <p>Program Type: {program.programType}</p>
-              <p>Description: {program.description}</p>
-              <p>Price: {program.price}</p>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <h3>Programs</h3>
+      {programs.length === 0 && <p>No programs available</p>}
+      {programs.map((p) => (
+        <div key={p.id} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+          <span>{p.programType} - {p.description} - ${p.price}</span>
+          <IconButton onClick={() => onDeleteProgram(p.id)} color="error">
+            <Delete />
+          </IconButton>
+        </div>
+      ))}
     </div>
   );
 };
+
 
 export default ProgramList;

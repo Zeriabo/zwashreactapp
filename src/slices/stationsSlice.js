@@ -49,7 +49,7 @@ export const fetchStations = (id) => async (dispatch) => {
   try {
     // Make an API request to get the station of a service provider
     axios
-      .get(`${API_BASE_URL}/v1/stations/service-provider/` + id)
+      .get(`${API_BASE_URL}:8092/v1/service-provider/stations/` + id)
       .then((payload) => dispatch(getStationsSuccess(payload)))
       .catch((error) => console.error("Error fetching stations:", error));
   } catch (error) {
@@ -58,37 +58,41 @@ export const fetchStations = (id) => async (dispatch) => {
 };
 
 export const createStation = (station) => async (dispatch) => {
-  // Construct the URL with all request parameters as query parameters
-  const url = new URL( `${API_BASE_URL}:8080/stations/`);
-  url.searchParams.append("name", station.data.name);
-  url.searchParams.append("address", station.data.address);
-  url.searchParams.append("latitude", station.data.latitude.toString());
-  url.searchParams.append("longitude", station.data.longitude.toString());
-  url.searchParams.append(
-    "serviceProvider",
-    station.data.serviceProvider.toString()
-  );
-  url.searchParams.append("media", station.data.media);
   try {
-    // Make an API request to sign in the user
-    await fetch(url, {
+    const response = await fetch(`${API_BASE_URL}:8080/stations/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-    })
-      .then((response) => response.json())
-      .then((data) => dispatch(getStationsSuccess(data)))
-      .then((data) => console.log(data))
-      .catch((err) => dispatch(stationError(err)));
-  } catch (error) {
-    console.error("Error getting stations: ", error);
+      body: JSON.stringify({
+        name: station.data.name,
+        address: station.data.address,
+        latitude: station.data.latitude,
+        longitude: station.data.longitude,
+        serviceProvider: station.data.serviceProvider,
+        logoFile: station.data.media.logoFile,
+        pictureFile: station.data.media.pictureFile,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to create station: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    dispatch(getStationsSuccess(data));
+    console.log("Station created:", data);
+  } catch (err) {
+    console.error("Error creating station:", err);
+    dispatch(stationError(err));
   }
 };
+
 const removeStation = (id) => ({
   type: "stations/removeStation",
   payload: id,
 });
+
 export const deleteStation = (id) => async (dispatch) => {
   try {
     // Make an API request to sign in the user

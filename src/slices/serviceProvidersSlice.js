@@ -1,28 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 const serviceProvidersSlice = createSlice({
   name: "serviceProviders",
   initialState: {
-    serviceProviders: [],
+    list: [], 
+    selectedServiceProviderId: null,
   },
   reducers: {
     getServiceProvidersSuccess: (state, action) => {
-      state.serviceProviders = action.payload;
+      state.list = action.payload;
+      state.selectedServiceProviderId = action.payload[0].id;
+      
     },
     createServiceProviderSuccess: (state, action) => {
-      state.serviceProviders.push(action.payload);
+      state.list.push(action.payload);
+    },
+    setSelectedServiceProvider: (state, action) => {
+      state.selectedServiceProviderId = action.payload;
     },
   },
 });
 
-export const { getServiceProvidersSuccess, createServiceProviderSuccess } =
+export const { getServiceProvidersSuccess, createServiceProviderSuccess,  setSelectedServiceProvider } =
   serviceProvidersSlice.actions;
 
 // Async action to fetch all service providers of a user
 export const fetchUserServiceProviders = (username) => async (dispatch) => {
   axios
-    .get(`http://localhost:7001/v1/service-providers/user/${username}`)
+    .get(`${API_BASE_URL}:8092/v1/service-provider/user/${username}`)
     .then((response) => dispatch(getServiceProvidersSuccess(response.data)))
     .catch((err) => console.log(err));
 };
@@ -32,7 +38,7 @@ export const createNewServiceProvider =
   (serviceProvider) => async (dispatch) => {
     try {
       const response = await fetch(
-        "http://localhost:7001/v1/service-providers/",
+        `${API_BASE_URL}8092/v1/service-provider/`,
         {
           method: "POST",
           headers: {
