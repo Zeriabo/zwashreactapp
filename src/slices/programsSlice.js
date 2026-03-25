@@ -14,21 +14,12 @@ export const fetchProgramsForStation = createAsyncThunk(
   "programs/fetchProgramsForStation",
   async (stationId, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${API_BASE_URL}:8080/stations/washes?id=${stationId}`);
+      // Use the gateway route for programs by station
+      const res = await fetch(`${API_BASE_URL}:8080/programs/station/${stationId}`);
       if (!res.ok) throw new Error("Failed to fetch programs");
 
       const data = await res.json();
-
-      const programs = data.map((p) => ({
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        duration: p.duration,
-        programType: p.programType,
-      }));
-
-      return programs;
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -40,19 +31,18 @@ export const addProgram = createAsyncThunk(
   "programs/addProgram",
   async ({ stationId, ...programData }, { rejectWithValue }) => {
     try {
-
-      const response = await fetch(`${API_BASE_URL}:8080/stations/programs/${stationId}`, {
+      // The backend expects POST /v1/programs/ with stationId in the body
+      const response = await fetch(`${API_BASE_URL}:8080/v1/programs/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(programData),
+        body: JSON.stringify({ ...programData, stationId }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to add a program");
       }
-
 
       const createdProgram = await response.json();
       return createdProgram;

@@ -14,12 +14,13 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 const AddProgram = () => {
   const dispatch = useDispatch();
   const { stationId } = useParams();
-  const [programType, setProgramType] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [programType, setProgramType] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [brushType, setBrushType] = useState(null);
-  const [soapAmount, setSoapAmount] = useState(null);
-  const [waterPressure, setWaterPressure] = useState(null);
+  const [brushType, setBrushType] = useState("");
+  const [soapAmount, setSoapAmount] = useState("");
+  const [waterPressure, setWaterPressure] = useState("");
   const navigate = useNavigate();
   const station = useSelector((state) => {
     return state.station.stations.find((s) => s.id === Number(stationId));
@@ -31,30 +32,19 @@ const AddProgram = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let newProgram = {};
-    // Create a program object with the entered data
-    if (brushType == "touch_less") {
-      {
-        newProgram = {
-          programType,
-          description,
-          price: parseFloat(price),
-          station: station,
-          soapAmount: parseInt(soapAmount),
-          waterPressure: parseInt(waterPressure),
-        };
-      }
-    } else {
-      newProgram = {
-        programType,
-        description,
-        price: parseFloat(price),
-        station: station,
-        brushType,
-        soapAmount: parseInt(soapAmount),
-        waterPressure: parseInt(waterPressure),
-      };
-    }
+    // Build the DTO expected by backend
+    let newProgram = {
+      stationId: Number(stationId),
+      name,
+      programType,
+      description,
+      price: parseFloat(price),
+      brushType,
+      soapAmount: soapAmount ? parseInt(soapAmount) : undefined,
+      waterPressure: waterPressure ? parseInt(waterPressure) : undefined,
+    };
+    // Remove undefined fields
+    Object.keys(newProgram).forEach(key => newProgram[key] === undefined && delete newProgram[key]);
 
     try {
       // Dispatch an action to create the program
@@ -154,14 +144,23 @@ const AddProgram = () => {
         </Typography>
         <label>Select the wash type</label>
         <form onSubmit={handleSubmit}>
+          <TextField
+            label="Program Name"
+            variant="outlined"
+            fullWidth
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <Select
             value={programType}
             onChange={handleProgramTypeChange}
             label="Program Type"
+            required
           >
-            <MenuItem value="HIGH_PRESSURE">High Pressure</MenuItem>
-            <MenuItem value="FOAM">Foam</MenuItem>
-            <MenuItem value="TOUCHLESS">Touch-less</MenuItem>
+            <MenuItem value="highpressure">High Pressure</MenuItem>
+            <MenuItem value="foam">Foam</MenuItem>
+            <MenuItem value="touchless">Touch-less</MenuItem>
           </Select>
 
           <TextField

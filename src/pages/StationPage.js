@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import MapPicker from "react-google-map-picker";
 import ProgramList from "../components/ProgramList";
+import OpeningHoursEditor from "../components/OpeningHoursEditor";
 import { fetchProgramsForStation, deleteProgram } from "../slices/programsSlice";
 import { updateStationAddress, deleteStation } from "../slices/stationsSlice";
 import {
@@ -76,7 +77,11 @@ const StationPage = () => {
     setLoading(true);
     setIsDialogOpen(false);
     try {
-      const updatedStation = { ...station, latitude: tempLocation.lat, longitude: tempLocation.lng };
+      const updatedStation = {
+        ...station,
+        latitude: tempLocation.lat,
+        longitude: tempLocation.lng,
+      };
       await new Promise((resolve) => setTimeout(resolve, 2000));
       dispatch(updateStationAddress(stationId, updatedStation));
       setUpdateSuccess(true);
@@ -107,7 +112,8 @@ const StationPage = () => {
   };
 
   const handleAddProgram = () => navigate(`/AddProgram/${stationId}`);
-  const handleGoToAccounting = () => navigate(`/station/accounting/${stationId}`);
+  const handleGoToAccounting = () =>
+    navigate(`/station/accounting/${stationId}`);
   const handleCloseSnackbar = () => {
     setUpdateSuccess(false);
     setDeleteSnackbarOpen(false);
@@ -117,7 +123,11 @@ const StationPage = () => {
 
   return (
     <div>
-      <Button variant="contained" color="secondary" onClick={() => navigate("/dashboard")}>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => navigate("/dashboard")}
+      >
         Back
       </Button>
 
@@ -136,11 +146,17 @@ const StationPage = () => {
         Accounting
       </Button>
 
+      <OpeningHoursEditor stationId={stationId} />
+
       <Snackbar open={updateSuccess} autoHideDuration={4000} onClose={handleCloseSnackbar}>
-        <Alert severity="success" icon={<CheckCircle />}>Address updated successfully!</Alert>
+        <Alert severity="success" icon={<CheckCircle />}>
+          Address updated successfully!
+        </Alert>
       </Snackbar>
       <Snackbar open={deleteSnackbarOpen} autoHideDuration={4000} onClose={handleCloseSnackbar}>
-        <Alert severity="success" icon={<CheckCircle />}>Station deleted successfully!</Alert>
+        <Alert severity="success" icon={<CheckCircle />}>
+          Station deleted successfully!
+        </Alert>
       </Snackbar>
 
       <Dialog open={confirmDeleteDialogOpen} onClose={() => setConfirmDeleteDialogOpen(false)}>
@@ -167,8 +183,17 @@ const StationPage = () => {
       <p>Name: {station.name}</p>
       <p>Address: {station.address}</p>
       <div>
-        <input type="text" value={stationAddress} onChange={(e) => setStationAddress(e.target.value)} />
-        <Button variant="contained" color="primary" onClick={handleChangeAddress} disabled={loading}>
+        <input
+          type="text"
+          value={stationAddress}
+          onChange={(e) => setStationAddress(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleChangeAddress}
+          disabled={loading}
+        >
           Update Address
         </Button>
         <IconButton onClick={handleDeleteStation} color="error" disabled={loading}>
@@ -177,7 +202,6 @@ const StationPage = () => {
         {loading && <CircularProgress />}
       </div>
 
-      {/* Program List with Delete */}
       <ProgramList programs={programs} onDeleteProgram={handleDeleteProgram} />
 
       <Button variant="contained" color="primary" onClick={handleAddProgram} disabled={loading}>
